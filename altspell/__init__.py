@@ -51,4 +51,9 @@ def create_app(test_config=None):
 
     db.init_app(app)
 
+    # apply the blueprints to the app
+    from . import convert
+
+    app.register_blueprint(convert.bp)
+
     return app
