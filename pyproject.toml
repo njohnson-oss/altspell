@@ -1,0 +1,43 @@
+[project]
+name = "altspell"
+version = "0.0.1"
+description = "A flask web API for converting between traditional English spellings and alternative spellings"
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [
+  { name="Nicholas Johnson", email="njohnson@posteo.net" },
+]
+classifiers = [
+  "Private :: Do Not Upload",
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python",
+  "License-Expression :: GPL-3.0-or-later",
+  "Operating System :: OS Independent",
+]
+dependencies = [
+    "flask",
+]
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[build-system]
+requires = ["flit_core<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.flit.module]
+name = "altspell"
+
+[tool.flit.sdist]
+include = [
+    "tests/",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = ["error"]
+
+[tool.coverage.run]
+branch = true
+source = ["altspell", "tests"]
