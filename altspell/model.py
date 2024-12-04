@@ -29,7 +29,7 @@ class Altspelling(db.Model):
     __tablename__ = "altspelling"
 
     id: Mapped[int] = mapped_column(db.Integer, primary_key=True)
-    name: Mapped[str]
+    name: Mapped[str] = mapped_column(db.String, unique=True)
 
     conversions: Mapped[List["Conversion"]] = relationship(back_populates="altspelling")
 
