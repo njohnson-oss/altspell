@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
+import uuid
 import datetime
 from typing import List
 from sqlalchemy.sql import func
@@ -36,7 +37,7 @@ class Altspelling(db.Model):
 class Conversion(db.Model):
     __tablename__ = "conversion"
 
-    id: Mapped[db.Uuid] = mapped_column(primary_key=True)
+    id: Mapped[uuid] = mapped_column(db.Uuid, primary_key=True)
     creation_date: Mapped[datetime.datetime] = mapped_column(db.DateTime,
                                                              server_default=func.utcnow())
     to_altspell: Mapped[bool]
