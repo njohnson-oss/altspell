@@ -18,7 +18,7 @@
 '''
 
 from flask import Blueprint, request, current_app
-from .model import Altspelling
+from .model import Altspelling, Conversion
 from . import db
 
 from .converter import convert_text
@@ -69,6 +69,21 @@ def convert():
         altspell_text = altspell_text[:conv_len_limit]
 
     resp = convert_text(tradspell_text, altspell_text, altspelling, to_altspell)
+
+    return resp
+
+@bp.route('/conversions/<uuid:conversion_id>', methods=['GET'])
+def get_conversion(conversion_id):
+    conversion = db.session.query(Conversion).one_or_404(id=conversion_id)
+
+    resp = {
+        'id': conversion.uuid,
+        'creation_date': conversion.creation_date,
+        'to_altspell': conversion.to_altspell,
+        'tradspell_text': conversion.tradspell_text,
+        'altspell_text': conversion.altspell_text,
+        'altspelling': conversion.altspelling
+    }
 
     return resp
 
