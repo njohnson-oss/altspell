@@ -43,7 +43,7 @@ def convert():
         return {'error': 'Key must be a string: altspelling'}, 400
 
     # just check that the record exists for now
-    db.session.query(Altspelling).filter_by(altspelling=altspelling).one_or_404()
+    db.session.query(Altspelling).filter_by(name=altspelling).one_or_404()
 
     if to_altspell is None:
         return {'error': 'Missing key: to_altspell'}, 400
@@ -82,7 +82,7 @@ def get_conversion(conversion_id):
         'to_altspell': conversion.to_altspell,
         'tradspell_text': conversion.tradspell_text,
         'altspell_text': conversion.altspell_text,
-        'altspelling': conversion.altspelling
+        'altspelling': conversion.altspelling.name
     }
 
     return resp
