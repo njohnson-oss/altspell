@@ -25,7 +25,7 @@ from .converter import convert_text
 
 bp = Blueprint("convert", __name__, url_prefix='/api')
 
-@bp.route('/convert', methods=['POST'])
+@bp.route('/conversions', methods=['POST'])
 def convert():
     data = request.json
 
