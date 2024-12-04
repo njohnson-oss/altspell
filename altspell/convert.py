@@ -19,6 +19,7 @@
 
 from flask import Blueprint, request, current_app
 from .model import Altspelling
+from . import db
 
 from .converter import convert_text
 
@@ -42,7 +43,7 @@ def convert():
         return {'error': 'Key must be a string: altspelling'}, 400
 
     # just check that the record exists for now
-    Altspelling.query.filter_by(altspelling=altspelling).one_or_404()
+    db.session.query(Altspelling).filter_by(altspelling=altspelling).one_or_404()
 
     if to_altspell is None:
         return {'error': 'Missing key: to_altspell'}, 400
