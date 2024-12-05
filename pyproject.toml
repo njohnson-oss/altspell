@@ -17,6 +17,7 @@ classifiers = [
 ]
 dependencies = [
     "flask",
+    "flask_sqlalchemy"
 ]
 
 [project.optional-dependencies]
