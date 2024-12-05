@@ -17,10 +17,19 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
+import importlib
+import pkgutil
 import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
+
+DISCOVERED_PLUGINS = {
+    name: importlib.import_module(name)
+    for finder, name, ispkg
+    in pkgutil.iter_modules()
+    if name.startswith('altspell_')
+}
 
 db = SQLAlchemy()
 
@@ -56,6 +65,13 @@ def create_app(test_config=None):
 
     with app.app_context():
         db.create_all()
+
+        # populate altspelling table with plugins
+        for plugin_name in DISCOVERED_PLUGINS.keys():
+            altspelling = db.Model.Altspelling(plugin_name)
+            db.session.add(altspelling)
+
+        db.session.commit()
 
     # apply the blueprints to the app
     from . import conversion
