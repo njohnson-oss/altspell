@@ -30,12 +30,16 @@ bp = Blueprint("convert", __name__, url_prefix='/api')
 def convert():
     data = request.json
 
+    save = data.get('save')
     to_altspell = data.get('to_altspell')
     tradspell_text = data.get('tradspell_text')
     altspell_text = data.get('altspell_text')
     altspelling = data.get('altspelling')
 
-    # error handling
+    # assign default save value
+    if save is None:
+        save = False
+
     if altspelling is None:
         return {'error': 'Missing key: altspelling'}, 400
 
