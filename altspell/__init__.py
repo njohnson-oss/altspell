@@ -58,8 +58,8 @@ def create_app(test_config=None):
         db.create_all()
 
     # apply the blueprints to the app
-    from . import convert
+    from . import conversion
 
-    app.register_blueprint(convert.bp)
+    app.register_blueprint(conversion.bp)
 
     return app
