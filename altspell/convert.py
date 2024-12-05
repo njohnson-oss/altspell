@@ -21,7 +21,8 @@ from flask import Blueprint, request, current_app
 from .model import Altspelling, Conversion
 from . import db
 
-from .converter import convert_text
+from .converter import convert_to_altspell
+from .converter import convert_to_tradspell
 
 
 bp = Blueprint("convert", __name__, url_prefix='/api')
@@ -64,6 +65,7 @@ def convert():
             return {'error': 'Key must be a string: to_altspell'}, 400
 
         tradspell_text = tradspell_text[:conv_len_limit]
+        altspell_text = convert_to_altspell(tradspell_text, altspelling)
     else:
         if altspell_text is None:
             return {'error': 'Missing key: altspell_text'}, 400
@@ -71,6 +73,7 @@ def convert():
             return {'error': 'Key must be string: tradspell_text'}, 400
 
         altspell_text = altspell_text[:conv_len_limit]
+        tradspell_text = convert_to_tradspell(altspell_text, altspelling)
 
     resp = convert_text(tradspell_text, altspell_text, altspelling, to_altspell)
 

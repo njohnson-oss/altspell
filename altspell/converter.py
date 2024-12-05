@@ -17,5 +17,8 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
-def convert_text(tradspell_text, altspell_text, altspelling, to_altspell):
-    return {}  # stub
+def convert_to_altspell(tradspell_text, altspelling):
+    return ''  # stub
+
+def convert_to_tradspell(altspell_text, altspelling):
+    return ''  # stub
