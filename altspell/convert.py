@@ -47,8 +47,7 @@ def convert():
     if not isinstance(altspelling, str):
         return {'error': 'Key must be a string: altspelling'}, 400
 
-    # just check that the record exists for now
-    db.session.query(Altspelling).filter_by(name=altspelling).one_or_404()
+    altspelling_id = db.session.query(Altspelling).filter_by(name=altspelling).one_or_404().id
 
     if to_altspell is None:
         return {'error': 'Missing key: to_altspell'}, 400
@@ -75,7 +74,21 @@ def convert():
         altspell_text = altspell_text[:conv_len_limit]
         tradspell_text = convert_to_tradspell(altspell_text, altspelling)
 
-    resp = convert_text(tradspell_text, altspell_text, altspelling, to_altspell)
+    resp = {
+        'to_altspell': to_altspell,
+        'tradspell_text': tradspell_text,
+        'altspell_text': altspell_text,
+        'altspelling': altspelling,
+        'save': save
+    }
+
+    if save:
+        conversion = Conversion(to_altspell, tradspell_text, altspell_text, altspelling_id)
+        db.session.add(conversion)
+        db.session.commit()
+
+        resp['id'] = conversion.id
+        resp['creation_date'] = conversion.creation_date
 
     return resp
 
