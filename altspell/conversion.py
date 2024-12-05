@@ -19,10 +19,7 @@
 
 from flask import Blueprint, request, current_app
 from .model import Altspelling, Conversion
-from . import db
-
-from .converter import convert_to_altspell
-from .converter import convert_to_tradspell
+from . import db, DISCOVERED_PLUGINS
 
 
 bp = Blueprint("convert", __name__, url_prefix='/api')
@@ -56,6 +53,12 @@ def convert():
         return {'error': 'Key must be a boolean: to_altspell'}, 400
 
     conv_len_limit = current_app.config.get('CONVERSION_LENGTH_LIMIT')
+
+    # get conversion functions
+    selected_plugin = DISCOVERED_PLUGINS.get(altspelling)
+    selected_plugin_class = getattr(selected_plugin, 'Plugin')
+    convert_to_altspell = selected_plugin_class.convert_to_altspell
+    convert_to_tradspell = selected_plugin_class.convert_to_tradspell
 
     if to_altspell:
         if tradspell_text is None:
