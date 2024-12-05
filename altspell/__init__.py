@@ -51,6 +51,12 @@ def create_app(test_config=None):
 
     db.init_app(app)
 
+    # create database
+    from . import model
+
+    with app.app_context():
+        db.create_all()
+
     # apply the blueprints to the app
     from . import convert
 
