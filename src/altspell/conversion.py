@@ -56,9 +56,9 @@ def convert():
 
     # get conversion functions
     selected_plugin = DISCOVERED_PLUGINS.get('altspell_' + altspelling)
-    selected_plugin_class = getattr(selected_plugin, 'Plugin')
-    convert_to_altspell = selected_plugin_class.convert_to_altspell
-    convert_to_tradspell = selected_plugin_class.convert_to_tradspell
+    selected_plugin_instance = getattr(selected_plugin, 'Plugin')()
+    convert_to_altspell = selected_plugin_instance.convert_to_altspell
+    convert_to_tradspell = selected_plugin_instance.convert_to_tradspell
 
     if to_altspell:
         if tradspell_text is None:
