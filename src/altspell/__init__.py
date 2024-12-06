@@ -68,7 +68,7 @@ def create_app(test_config=None):
 
         # populate altspelling table with plugins
         for plugin_name in DISCOVERED_PLUGINS.keys():
-            altspelling = model.Altspelling(name=plugin_name)
+            altspelling = model.Altspelling(name=plugin_name.removeprefix('altspell_'))
             db.session.add(altspelling)
 
         db.session.commit()
