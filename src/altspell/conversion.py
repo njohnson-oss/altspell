@@ -55,7 +55,7 @@ def convert():
     conv_len_limit = current_app.config.get('CONVERSION_LENGTH_LIMIT')
 
     # get conversion functions
-    selected_plugin = DISCOVERED_PLUGINS.get(altspelling)
+    selected_plugin = DISCOVERED_PLUGINS.get('altspell_' + altspelling)
     selected_plugin_class = getattr(selected_plugin, 'Plugin')
     convert_to_altspell = selected_plugin_class.convert_to_altspell
     convert_to_tradspell = selected_plugin_class.convert_to_tradspell
