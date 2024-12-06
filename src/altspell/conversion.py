@@ -67,7 +67,11 @@ def convert():
             return {'error': 'Key must be a string: to_altspell'}, 400
 
         tradspell_text = tradspell_text[:conv_len_limit]
-        altspell_text = convert_to_altspell(tradspell_text)
+
+        try:
+            altspell_text = convert_to_altspell(tradspell_text)
+        except NotImplementedError:
+            return {'error': 'tradspell -> altspell conversion is not implemented for this plugin'}, 400
     else:
         if altspell_text is None:
             return {'error': 'Missing key: altspell_text'}, 400
@@ -75,7 +79,11 @@ def convert():
             return {'error': 'Key must be string: tradspell_text'}, 400
 
         altspell_text = altspell_text[:conv_len_limit]
-        tradspell_text = convert_to_tradspell(altspell_text)
+
+        try:
+            tradspell_text = convert_to_tradspell(altspell_text)
+        except NotImplementedError:
+            return {'error': 'altspell -> tradspell conversion is not implemented for this plugin'}, 400
 
     resp = {
         'to_altspell': to_altspell,
