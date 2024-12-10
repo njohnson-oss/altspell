@@ -23,8 +23,8 @@ from abc import ABC, abstractmethod
 class PluginBase(ABC):
     @abstractmethod
     def convert_to_altspell(self, tradspell_text: str) -> str:
-        pass
+        """Thread-safe function for converting to alternative English spelling."""
 
     @abstractmethod
     def convert_to_tradspell(self, altspell_text: str) -> str:
-        pass
+        """Thread-safe function for converting to traditional English spelling."""
