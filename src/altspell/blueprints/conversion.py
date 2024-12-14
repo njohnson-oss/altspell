@@ -22,7 +22,7 @@ from ..model import Altspelling, Conversion
 from .. import db, DISCOVERED_PLUGINS
 
 
-bp = Blueprint("convert", __name__, url_prefix='/api')
+bp = Blueprint("conversions", __name__, url_prefix='/api')
 
 @bp.route('/conversions', methods=['POST'])
 def convert():
