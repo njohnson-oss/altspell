@@ -74,8 +74,7 @@ def create_app(test_config=None):
         db.session.commit()
 
     # apply the blueprints to the app
-    from . import conversion
-
+    from .blueprints import conversion
     app.register_blueprint(conversion.bp)
 
     return app
