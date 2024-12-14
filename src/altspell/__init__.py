@@ -77,4 +77,7 @@ def create_app(test_config=None):
     from .blueprints import conversion
     app.register_blueprint(conversion.bp)
 
+    from .blueprints import plugin
+    app.register_blueprint(plugin.bp)
+
     return app
