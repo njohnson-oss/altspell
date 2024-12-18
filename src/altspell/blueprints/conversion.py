@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
+import uuid
 from flask import Blueprint, request, current_app
 from ..model import Altspelling, Conversion
 from .. import db, DISCOVERED_PLUGINS
@@ -94,7 +95,7 @@ def convert():
     }
 
     if save:
-        conversion = Conversion(to_altspell, tradspell_text, altspell_text, altspelling_id)
+        conversion = Conversion(id=uuid.uuid4(), to_altspell=to_altspell, tradspell_text=tradspell_text, altspell_text=altspell_text, altspelling_id=altspelling_id)
         db.session.add(conversion)
         db.session.commit()
 

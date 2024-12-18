@@ -20,7 +20,6 @@
 import uuid
 import datetime
 from typing import List
-from sqlalchemy.sql import func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from . import db
@@ -38,8 +37,8 @@ class Conversion(db.Model):
     __tablename__ = "conversion"
 
     id: Mapped[uuid] = mapped_column(db.Uuid, primary_key=True)
-    creation_date: Mapped[datetime.datetime] = mapped_column(db.DateTime,
-                                                             server_default=func.utcnow())
+    creation_date: Mapped[datetime.datetime] = mapped_column(db.DateTime(timezone=True),
+                                                             server_default=db.func.now())
     to_altspell: Mapped[bool]
     tradspell_text: Mapped[str]
     altspell_text: Mapped[str]
