@@ -106,10 +106,10 @@ def convert():
 
 @bp.route('/conversions/<uuid:conversion_id>', methods=['GET'])
 def get_conversion(conversion_id):
-    conversion = db.session.query(Conversion).one_or_404(id=conversion_id)
+    conversion = db.session.query(Conversion).filter_by(id=conversion_id).one_or_404()
 
     resp = {
-        'id': conversion.uuid,
+        'id': conversion.id,
         'creation_date': conversion.creation_date,
         'to_altspell': conversion.to_altspell,
         'tradspell_text': conversion.tradspell_text,
