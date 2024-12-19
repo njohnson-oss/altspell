@@ -20,7 +20,7 @@
 import uuid
 from flask import Blueprint, request, current_app
 from ..model import Altspelling, Conversion
-from .. import db, DISCOVERED_PLUGINS
+from .. import db
 
 
 bp = Blueprint("conversions", __name__, url_prefix='/api')
@@ -56,10 +56,9 @@ def convert():
     conv_len_limit = current_app.config.get('CONVERSION_LENGTH_LIMIT')
 
     # get conversion functions
-    selected_plugin = DISCOVERED_PLUGINS.get('altspell_' + altspelling)
-    selected_plugin_instance = getattr(selected_plugin, 'Plugin')()
-    convert_to_altspell = selected_plugin_instance.convert_to_altspell
-    convert_to_tradspell = selected_plugin_instance.convert_to_tradspell
+    selected_plugin = current_app.plugin_instances.get(altspelling)
+    convert_to_altspell = selected_plugin.convert_to_altspell
+    convert_to_tradspell = selected_plugin.convert_to_tradspell
 
     if to_altspell:
         if tradspell_text is None:

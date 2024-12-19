@@ -17,15 +17,14 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
-from flask import Blueprint, jsonify
-from .. import DISCOVERED_PLUGINS
+from flask import Blueprint, jsonify, current_app
 
 
 bp = Blueprint("plugins", __name__, url_prefix='/api')
 
 @bp.route('/plugins', methods=['GET'])
 def get_plugins():
-    plugins = list(map(lambda plugin: plugin.removeprefix('altspell_'), list(DISCOVERED_PLUGINS.keys())))
+    plugins = current_app.plugin_instances.keys()
     return jsonify(plugins)
 
 @bp.after_request

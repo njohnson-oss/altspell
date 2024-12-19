@@ -25,8 +25,8 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
 
 
-DISCOVERED_PLUGINS = {
-    name: importlib.import_module(name)
+AVAILABLE_PLUGINS = {
+    name.removeprefix('altspell_'): importlib.import_module(name)
     for finder, name, ispkg
     in pkgutil.iter_modules()
     if name.startswith('altspell_')
@@ -43,7 +43,9 @@ def create_app(test_config=None):
         # store the database in the app instance path
         SQLALCHEMY_DATABASE_URI='sqlite:///' + os.path.join(app.instance_path, 'altspell.db'),
         # maximum number of characters accepted for conversion
-        CONVERSION_LENGTH_LIMIT = 20000
+        CONVERSION_LENGTH_LIMIT = 20000,
+        # enable all plugins by default
+        ENABLED_PLUGINS = AVAILABLE_PLUGINS.keys()
     )
 
     if test_config is None:
@@ -67,15 +69,25 @@ def create_app(test_config=None):
     with app.app_context():
         db.create_all()
 
-        # populate altspelling table with plugins
-        for plugin_name in DISCOVERED_PLUGINS.keys():
-            altspelling = model.Altspelling(name=plugin_name.removeprefix('altspell_'))
+        # populate altspelling table with enabled plugins
+        for plugin in AVAILABLE_PLUGINS:
+            if plugin in app.config.get('ENABLED_PLUGINS'):
+                altspelling = model.Altspelling(name=plugin)
 
-            try:
-                db.session.add(altspelling)
-                db.session.commit()
-            except IntegrityError:
-                db.session.rollback()
+                try:
+                    db.session.add(altspelling)
+                    db.session.commit()
+                except IntegrityError:
+                    db.session.rollback()
+
+    # initialize plugins
+    app.plugin_instances = {}
+
+    for plugin in AVAILABLE_PLUGINS:
+        if plugin in app.config.get('ENABLED_PLUGINS'):
+            print(f"Initializing plugin: {plugin}...")
+            plugin_instance = getattr(AVAILABLE_PLUGINS.get(plugin), 'Plugin')()
+            app.plugin_instances[plugin] = plugin_instance
 
     # apply the blueprints to the app
     from .blueprints import conversion
