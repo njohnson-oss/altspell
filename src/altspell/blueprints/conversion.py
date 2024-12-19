@@ -21,7 +21,7 @@ import uuid
 from flask import Blueprint, request, current_app
 from ..model import Altspelling, Conversion
 from .. import db
-
+import pytz
 
 bp = Blueprint("conversions", __name__, url_prefix='/api')
 
@@ -103,7 +103,7 @@ def convert():
         db.session.commit()
 
         resp['id'] = conversion.id
-        resp['creation_date'] = conversion.creation_date
+        resp['creation_date'] = pytz.utc.localize(conversion.creation_date).isoformat()
 
     return resp
 
@@ -113,7 +113,7 @@ def get_conversion(conversion_id):
 
     resp = {
         'id': conversion.id,
-        'creation_date': conversion.creation_date,
+        'creation_date': pytz.utc.localize(conversion.creation_date).isoformat(),
         'to_altspell': conversion.to_altspell,
         'tradspell_text': conversion.tradspell_text,
         'altspell_text': conversion.altspell_text,
