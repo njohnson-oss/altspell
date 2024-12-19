@@ -22,6 +22,7 @@ import pkgutil
 import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.exc import IntegrityError
 
 
 DISCOVERED_PLUGINS = {
@@ -39,8 +40,8 @@ def create_app(test_config=None):
     app.config.from_mapping(
         # a default secret that should be overridden by instance config
         SECRET_KEY="dev",
-        # store the database in memory
-        SQLALCHEMY_DATABASE_URI='sqlite://',
+        # store the database in the app instance path
+        SQLALCHEMY_DATABASE_URI='sqlite:///' + os.path.join(app.instance_path, 'altspell.db'),
         # maximum number of characters accepted for conversion
         CONVERSION_LENGTH_LIMIT = 20000
     )
@@ -69,9 +70,12 @@ def create_app(test_config=None):
         # populate altspelling table with plugins
         for plugin_name in DISCOVERED_PLUGINS.keys():
             altspelling = model.Altspelling(name=plugin_name.removeprefix('altspell_'))
-            db.session.add(altspelling)
 
-        db.session.commit()
+            try:
+                db.session.add(altspelling)
+                db.session.commit()
+            except IntegrityError:
+                db.session.rollback()
 
     # apply the blueprints to the app
     from .blueprints import conversion
