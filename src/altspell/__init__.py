@@ -85,11 +85,11 @@ def create_app(test_config=None):
                     db.session.rollback()
 
             # initialize plugin
-            app.logger.info('Initializing plugin: %(plugin)...')
+            app.logger.info('Initializing plugin: %s...', plugin)
             plugin_instance = getattr(AVAILABLE_PLUGINS.get(plugin), 'Plugin')()
             app.plugin_instances[plugin] = plugin_instance
         else:
-            app.logger.warning('Enabled plugin is not available: %(plugin)')
+            app.logger.warning('Enabled plugin is not available: %s', plugin)
 
     # apply the blueprints to the app
     from .blueprints import conversion
