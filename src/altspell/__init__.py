@@ -76,7 +76,7 @@ def create_app(test_config=None):
         if plugin in AVAILABLE_PLUGINS:
             altspelling = model.Altspelling(name=plugin)
 
-            # populate altspelling table with enabled plugins
+            # populate altspelling table with enabled plugin
             with app.app_context():
                 try:
                     db.session.add(altspelling)
@@ -84,7 +84,7 @@ def create_app(test_config=None):
                 except IntegrityError:
                     db.session.rollback()
 
-            # initialize plugins
+            # initialize plugin
             app.logger.info('Initializing plugin: %(plugin)...')
             plugin_instance = getattr(AVAILABLE_PLUGINS.get(plugin), 'Plugin')()
             app.plugin_instances[plugin] = plugin_instance
