@@ -20,7 +20,7 @@
 import importlib
 import pkgutil
 import os
-from warnings import warn
+import logging
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
@@ -85,11 +85,11 @@ def create_app(test_config=None):
                     db.session.rollback()
 
             # initialize plugins
-            print(f"Initializing plugin: {plugin}...")
+            app.logger.info('Initializing plugin: %(plugin)...')
             plugin_instance = getattr(AVAILABLE_PLUGINS.get(plugin), 'Plugin')()
             app.plugin_instances[plugin] = plugin_instance
         else:
-            warn(f"Enabled plugin is not available: {plugin}", UserWarning)
+            app.logger.warning('Enabled plugin is not available: %(plugin)')
 
     # apply the blueprints to the app
     from .blueprints import conversion
