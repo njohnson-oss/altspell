@@ -70,8 +70,8 @@ def create_app(test_config=None):
         db.create_all()
 
         # populate altspelling table with enabled plugins
-        for plugin in AVAILABLE_PLUGINS:
-            if plugin in app.config.get('ENABLED_PLUGINS'):
+        for plugin in app.config.get('ENABLED_PLUGINS'):
+            if plugin in AVAILABLE_PLUGINS:
                 altspelling = model.Altspelling(name=plugin)
 
                 try:
@@ -83,8 +83,8 @@ def create_app(test_config=None):
     app.plugin_instances = {}
 
     # initialize plugins
-    for plugin in AVAILABLE_PLUGINS:
-        if plugin in app.config.get('ENABLED_PLUGINS'):
+    for plugin in app.config.get('ENABLED_PLUGINS'):
+        if plugin in AVAILABLE_PLUGINS:
             print(f"Initializing plugin: {plugin}...")
             plugin_instance = getattr(AVAILABLE_PLUGINS.get(plugin), 'Plugin')()
             app.plugin_instances[plugin] = plugin_instance
