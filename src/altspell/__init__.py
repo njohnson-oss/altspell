@@ -69,22 +69,21 @@ def create_app(test_config=None):
         # create database tables
         db.create_all()
 
-        # populate altspelling table with enabled plugins
-        for plugin in app.config.get('ENABLED_PLUGINS'):
-            if plugin in AVAILABLE_PLUGINS:
-                altspelling = model.Altspelling(name=plugin)
+    app.plugin_instances = {}
 
+    for plugin in app.config.get('ENABLED_PLUGINS'):
+        if plugin in AVAILABLE_PLUGINS:
+            altspelling = model.Altspelling(name=plugin)
+
+            # populate altspelling table with enabled plugins
+            with app.app_context():
                 try:
                     db.session.add(altspelling)
                     db.session.commit()
                 except IntegrityError:
                     db.session.rollback()
 
-    app.plugin_instances = {}
-
-    # initialize plugins
-    for plugin in app.config.get('ENABLED_PLUGINS'):
-        if plugin in AVAILABLE_PLUGINS:
+            # initialize plugins
             print(f"Initializing plugin: {plugin}...")
             plugin_instance = getattr(AVAILABLE_PLUGINS.get(plugin), 'Plugin')()
             app.plugin_instances[plugin] = plugin_instance
