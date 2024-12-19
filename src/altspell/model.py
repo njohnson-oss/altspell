@@ -21,9 +21,27 @@ import uuid
 import datetime
 from typing import List
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.sql import expression
+from sqlalchemy.ext.compiler import compiles
 
 from . import db
 
+
+class utcnow(expression.FunctionElement):
+    type = db.DateTime()
+    inherit_cache = True
+
+@compiles(utcnow, "postgresql")
+def pg_utcnow(element, compiler, **kw):
+    return "TIMEZONE('utc', CURRENT_TIMESTAMP)"
+
+@compiles(utcnow, "mssql")
+def ms_utcnow(element, compiler, **kw):
+    return "GETUTCDATE()"
+
+@compiles(utcnow, "sqlite")
+def sqlite_utcnow(element, compiler, **kw):
+    return "(STRFTIME('%Y-%m-%d %H:%M:%f', 'NOW'))"
 
 class Altspelling(db.Model):
     __tablename__ = "altspelling"
@@ -37,8 +55,8 @@ class Conversion(db.Model):
     __tablename__ = "conversion"
 
     id: Mapped[uuid] = mapped_column(db.Uuid, primary_key=True)
-    creation_date: Mapped[datetime.datetime] = mapped_column(db.DateTime(timezone=True),
-                                                             server_default=db.func.now())
+    creation_date: Mapped[datetime.datetime] = mapped_column(db.DateTime(),
+                                                             server_default=utcnow())
     to_altspell: Mapped[bool]
     tradspell_text: Mapped[str]
     altspell_text: Mapped[str]
