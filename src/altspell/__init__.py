@@ -63,10 +63,10 @@ def create_app(test_config=None):
 
     db.init_app(app)
 
-    # create database
     from . import model
 
     with app.app_context():
+        # create database tables
         db.create_all()
 
         # populate altspelling table with enabled plugins
@@ -80,9 +80,9 @@ def create_app(test_config=None):
                 except IntegrityError:
                     db.session.rollback()
 
-    # initialize plugins
     app.plugin_instances = {}
 
+    # initialize plugins
     for plugin in AVAILABLE_PLUGINS:
         if plugin in app.config.get('ENABLED_PLUGINS'):
             print(f"Initializing plugin: {plugin}...")
