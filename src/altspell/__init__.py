@@ -20,7 +20,6 @@
 import importlib
 import pkgutil
 import os
-import logging
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
