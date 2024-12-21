@@ -78,7 +78,7 @@ def create_app(test_config=None):
 
             # validate plugin implementation
             if not hasattr(plugin_mod, 'Plugin') or not issubclass(plugin_mod.Plugin, PluginBase):
-                app.logger.info('Enabled plugin excluded for incorrect implementation: %s', plugin)
+                app.logger.error('Enabled plugin excluded for incorrect implementation: %s', plugin)
                 continue
 
             altspelling = model.Altspelling(name=plugin)
