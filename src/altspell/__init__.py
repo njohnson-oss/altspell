@@ -46,7 +46,9 @@ def create_app(test_config=None):
         # maximum number of characters accepted for conversion
         CONVERSION_LENGTH_LIMIT = 20000,
         # enable all plugins by default
-        ENABLED_PLUGINS = AVAILABLE_PLUGINS.keys()
+        ENABLED_PLUGINS = AVAILABLE_PLUGINS.keys(),
+        # disable CAPTCHA for test purposes
+        ENABLE_HCAPTCHA = False
     )
 
     if test_config is None:

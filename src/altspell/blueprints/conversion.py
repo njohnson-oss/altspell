@@ -22,10 +22,13 @@ from flask import Blueprint, request, current_app
 import pytz
 from ..model import Altspelling, Conversion
 from .. import db
+from ..hcaptcha import require_hcaptcha
+
 
 bp = Blueprint("conversions", __name__, url_prefix='/api')
 
 @bp.route('/conversions', methods=['POST'])
+@require_hcaptcha
 def convert():
     data = request.json
 
