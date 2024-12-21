@@ -23,6 +23,7 @@ import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
+from .plugin import PluginBase
 
 
 AVAILABLE_PLUGINS = {
@@ -73,6 +74,13 @@ def create_app(test_config=None):
 
     for plugin in app.config['ENABLED_PLUGINS']:
         if plugin in AVAILABLE_PLUGINS:
+            plugin_mod = AVAILABLE_PLUGINS[plugin]
+
+            # validate plugin implementation
+            if not hasattr(plugin_mod, 'Plugin') or not issubclass(plugin_mod.Plugin, PluginBase):
+                app.logger.info('Enabled plugin excluded for incorrect implementation: %s', plugin)
+                continue
+
             altspelling = model.Altspelling(name=plugin)
 
             # populate altspelling table with enabled plugin
@@ -85,7 +93,7 @@ def create_app(test_config=None):
 
             # initialize plugin
             app.logger.info('Initializing plugin: %s...', plugin)
-            plugin_instance = getattr(AVAILABLE_PLUGINS.get(plugin), 'Plugin')()
+            plugin_instance = plugin_mod.Plugin()
             app.plugin_instances[plugin] = plugin_instance
         else:
             app.logger.warning('Enabled plugin is not available: %s', plugin)
