@@ -71,7 +71,7 @@ def create_app(test_config=None):
 
     app.plugin_instances = {}
 
-    for plugin in app.config.get('ENABLED_PLUGINS'):
+    for plugin in app.config['ENABLED_PLUGINS']:
         if plugin in AVAILABLE_PLUGINS:
             altspelling = model.Altspelling(name=plugin)
 

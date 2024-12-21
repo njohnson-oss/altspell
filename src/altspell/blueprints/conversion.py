@@ -53,7 +53,7 @@ def convert():
     if not isinstance(to_altspell, bool):
         return {'error': 'Key must be a boolean: to_altspell'}, 400
 
-    conv_len_limit = current_app.config.get('CONVERSION_LENGTH_LIMIT')
+    conv_len_limit = current_app.config['CONVERSION_LENGTH_LIMIT']
 
     # get conversion functions
     selected_plugin = current_app.plugin_instances.get(altspelling)
