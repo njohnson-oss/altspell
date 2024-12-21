@@ -19,9 +19,9 @@
 
 import uuid
 from flask import Blueprint, request, current_app
+import pytz
 from ..model import Altspelling, Conversion
 from .. import db
-import pytz
 
 bp = Blueprint("conversions", __name__, url_prefix='/api')
 
