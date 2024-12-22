@@ -124,8 +124,3 @@ def get_conversion(conversion_id):
     }
 
     return resp
-
-@bp.after_request
-def after_request(response):
-    response.headers['Access-Control-Allow-Origin'] = '*'
-    return response

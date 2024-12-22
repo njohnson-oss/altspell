@@ -18,6 +18,7 @@ classifiers = [
 dependencies = [
     "flask",
     "flask_sqlalchemy",
+    "flask_cors",
     "pytz"
 ]
 

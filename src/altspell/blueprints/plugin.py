@@ -26,8 +26,3 @@ bp = Blueprint("plugins", __name__, url_prefix='/api')
 def get_plugins():
     plugins = current_app.plugin_instances.keys()
     return jsonify(plugins)
-
-@bp.after_request
-def after_request(response):
-    response.headers['Access-Control-Allow-Origin'] = '*'
-    return response
