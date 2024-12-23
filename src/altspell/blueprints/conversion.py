@@ -44,6 +44,15 @@ def convert():
     - altspell_text (str): Text in alternative English spelling (necessary if to_altspell is False).
     - save (bool): Indicates whether save the resulting conversion.
 
+    JSON Response Parameters:
+    - id (uuid): ID of the conversion. (only if 'save' was True in the request)
+    - creation_date (DateTime): Date and time conversion was inserted into the database. (only if
+                                'save' was True in the request)
+    - altspelling (str): Name of conversion Plugin.
+    - to_altspell (bool): Indicates the direction of conversion.
+    - tradspell_text (str): Text in traditional English spelling (necessary if to_altspell is True).
+    - altspell_text (str): Text in alternative English spelling (necessary if to_altspell is False).
+
     Returns:
         Response: A JSON Response object containing the converted English text.
 
