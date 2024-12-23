@@ -93,11 +93,11 @@ def convert():
             return {'error': 'altspell -> tradspell conversion is not implemented for this plugin'}, 400
 
     resp = {
+        'altspelling': altspelling,
         'to_altspell': to_altspell,
         'tradspell_text': tradspell_text,
-        'altspell_text': altspell_text,
-        'altspelling': altspelling,
         'save': save
+        'altspell_text': altspell_text
     }
 
     if save:
@@ -117,10 +117,10 @@ def get_conversion(conversion_id):
     resp = {
         'id': conversion.id,
         'creation_date': pytz.utc.localize(conversion.creation_date).isoformat(),
+        'altspelling': conversion.altspelling.name,
         'to_altspell': conversion.to_altspell,
         'tradspell_text': conversion.tradspell_text,
-        'altspell_text': conversion.altspell_text,
-        'altspelling': conversion.altspelling.name
+        'altspell_text': conversion.altspell_text
     }
 
     return resp
