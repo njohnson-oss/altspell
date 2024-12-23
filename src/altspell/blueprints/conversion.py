@@ -30,6 +30,49 @@ bp = Blueprint("conversions", __name__, url_prefix='/api')
 @bp.route('/conversions', methods=['POST'])
 @require_hcaptcha
 def convert():
+    """
+    Endpoint to convert traditional English spelling to alternative English spelling and vice
+    versa.
+
+    This endpoint accepts a POST request with a JSON request body and returns the converted English
+    text in the JSON Response. Optionally, it saves the resulting conversion in the database.
+
+    JSON Request Parameters:
+    - altspelling (str): Name of conversion Plugin.
+    - to_altspell (bool): Indicates the direction of conversion.
+    - tradspell_text (str): Text in traditional English spelling (necessary if to_altspell is True).
+    - altspell_text (str): Text in alternative English spelling (necessary if to_altspell is False).
+    - save (bool): Indicates whether save the resulting conversion.
+
+    Returns:
+        Response: A JSON Response object containing the converted English text.
+
+    Example:
+
+        Request:
+        POST /api/conversions
+        Request Body: {
+            'altspelling': 'lytspel',
+            'to_altspell': True,
+            'tradspell_text': 'Hello world!',
+            'save': True
+        }
+
+        Response:
+        POST /api/conversions
+        Response Body: {
+            'id': '7d9be066-6a0b-4459-9242-86dce2df6775'
+            'creation_date': '2020-10-21T05:39:20+0000'
+            'altspelling': 'lytspel',
+            'to_altspell': True,
+            'tradspell_text': 'Hello world!',
+            'altspell_text': 'Heló wurld!'
+        }
+
+    HTTP Status Codes:
+    - 200 OK: Converted English text is returned.
+    - 400 Bad Request: JSON request is malformed or requested plugin method is unimplemented.
+    """
     data = request.json
 
     save = data.get('save')
