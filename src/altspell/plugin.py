@@ -38,8 +38,8 @@ class PluginBase(ABC):
         Thread-safe method for converting from traditional English spelling to alternative
         English spelling. All concrete subclasses must implement or raise a NotImplementedError.
 
-        Parameters:
-            tradspell_text: (str): Text written in the traditional English spelling.
+        Args:
+            tradspell_text (str): Text written in the traditional English spelling.
 
         Returns:
             str: Text written in the alternative English spelling.
@@ -51,8 +51,8 @@ class PluginBase(ABC):
         Thread-safe method for converting from alternative English spelling to traditional
         English spelling. All concrete subclasses must implement or a NotImplementedError.
 
-        Parameters:
-            altspell_text: (str): Text written in the alternative English spelling.
+        Args:
+            altspell_text (str): Text written in the alternative English spelling.
 
         Returns:
             str: Text written in the traditional English spelling.

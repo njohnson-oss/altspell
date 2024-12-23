@@ -44,13 +44,13 @@ def require_hcaptcha(func):
     request to proceed. The hCaptcha token is expected in the JSON key: 'hcaptcha_token'. hCaptcha
     verification can be bypassed by setting ENABLE_HCAPTCHA to False in the app instance config.
 
-    Parameters:
+    Args:
         func: Function for which hCaptcha is required.
 
     Returns:
         function: If the hCaptcha is verified successfully, func is returned.
         Response: If the hCaptcha is missing or fails to verify, a '400 Bad Request' Response is
-        returned.
+                  returned.
     """
     @wraps(func)
     def wrapper(*args, **kwargs):
