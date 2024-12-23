@@ -32,15 +32,15 @@ class utcnow(expression.FunctionElement):
     inherit_cache = True
 
 @compiles(utcnow, "postgresql")
-def pg_utcnow(element, compiler, **kw):
+def pg_utcnow(_element, _compiler, **kw):
     return "TIMEZONE('utc', CURRENT_TIMESTAMP)"
 
 @compiles(utcnow, "mssql")
-def ms_utcnow(element, compiler, **kw):
+def ms_utcnow(_element, _compiler, **kw):
     return "GETUTCDATE()"
 
 @compiles(utcnow, "sqlite")
-def sqlite_utcnow(element, compiler, **kw):
+def sqlite_utcnow(_element, _compiler, **kw):
     return "(STRFTIME('%Y-%m-%d %H:%M:%f', 'NOW'))"
 
 class Altspelling(db.Model):
