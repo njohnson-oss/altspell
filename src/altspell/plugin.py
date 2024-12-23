@@ -36,7 +36,7 @@ class PluginBase(ABC):
     def convert_to_altspell(self, tradspell_text: str) -> str:
         """
         Thread-safe method for converting from traditional English spelling to alternative
-        English spelling. All concrete subclasses must implement.
+        English spelling. All concrete subclasses must implement or raise a NotImplementedError.
 
         Parameters:
             tradspell_text: (str): Text written in the traditional English spelling.
@@ -49,7 +49,7 @@ class PluginBase(ABC):
     def convert_to_tradspell(self, altspell_text: str) -> str:
         """
         Thread-safe method for converting from alternative English spelling to traditional
-        English spelling. All concrete subclasses must implement.
+        English spelling. All concrete subclasses must implement or a NotImplementedError.
 
         Parameters:
             altspell_text: (str): Text written in the alternative English spelling.
