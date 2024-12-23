@@ -71,7 +71,7 @@ def create_app(test_config=None):
 
     db.init_app(app)
 
-    from . import model
+    from . import model  # pylint: disable=import-outside-toplevel
 
     with app.app_context():
         # create database tables
@@ -106,10 +106,10 @@ def create_app(test_config=None):
             app.logger.warning('Enabled plugin is not available: %s', plugin)
 
     # apply the blueprints to the app
-    from .blueprints import conversion
+    from .blueprints import conversion  # pylint: disable=import-outside-toplevel
     app.register_blueprint(conversion.bp)
 
-    from .blueprints import plugin
+    from .blueprints import plugin  # pylint: disable=import-outside-toplevel
     app.register_blueprint(plugin.bp)
 
     return app
