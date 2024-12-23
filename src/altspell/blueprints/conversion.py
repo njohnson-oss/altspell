@@ -78,7 +78,9 @@ def convert():
         try:
             altspell_text = convert_to_altspell(tradspell_text)
         except NotImplementedError:
-            return {'error': 'tradspell -> altspell conversion is not implemented for this plugin'}, 400
+            return {
+                'error': 'tradspell -> altspell conversion is not implemented for this plugin'
+            }, 400
     else:
         if altspell_text is None:
             return {'error': 'Missing key: altspell_text'}, 400
@@ -90,7 +92,9 @@ def convert():
         try:
             tradspell_text = convert_to_tradspell(altspell_text)
         except NotImplementedError:
-            return {'error': 'altspell -> tradspell conversion is not implemented for this plugin'}, 400
+            return {
+                'error': 'altspell -> tradspell conversion is not implemented for this plugin'
+            }, 400
 
     resp = {
         'altspelling': altspelling,
@@ -100,7 +104,13 @@ def convert():
     }
 
     if save:
-        conversion = Conversion(id=uuid.uuid4(), to_altspell=to_altspell, tradspell_text=tradspell_text, altspell_text=altspell_text, altspelling_id=altspelling_id)
+        conversion = Conversion(
+            id=uuid.uuid4(),
+            to_altspell=to_altspell,
+            tradspell_text=tradspell_text,
+            altspell_text=altspell_text,
+            altspelling_id=altspelling_id
+        )
         db.session.add(conversion)
         db.session.commit()
 
