@@ -21,10 +21,39 @@ from abc import ABC, abstractmethod
 
 
 class PluginBase(ABC):
+    """
+    An interface for converter plugins.
+
+    Methods:
+        convert_to_altspell(tradspell_text: str) -> str:
+            Thread-safe method for converting from traditional English spelling to alternative
+            English spelling.
+        convert_to_tradspell(altspell_text: str) -> str:
+            Thread-safe method for converting from alternative English spelling to traditional
+            English spelling.
+    """
     @abstractmethod
     def convert_to_altspell(self, tradspell_text: str) -> str:
-        """Thread-safe function for converting to alternative English spelling."""
+        """
+        Thread-safe method for converting from traditional English spelling to alternative
+        English spelling. All concrete subclasses must implement.
+
+        Parameters:
+            tradspell_text: (str): Text written in the traditional English spelling.
+
+        Returns:
+            str: Text written in the alternative English spelling.
+        """
 
     @abstractmethod
     def convert_to_tradspell(self, altspell_text: str) -> str:
-        """Thread-safe function for converting to traditional English spelling."""
+        """
+        Thread-safe method for converting from alternative English spelling to traditional
+        English spelling. All concrete subclasses must implement.
+
+        Parameters:
+            altspell_text: (str): Text written in the alternative English spelling.
+
+        Returns:
+            str: Text written in the traditional English spelling.
+        """
