@@ -96,7 +96,6 @@ def convert():
         'altspelling': altspelling,
         'to_altspell': to_altspell,
         'tradspell_text': tradspell_text,
-        'save': save
         'altspell_text': altspell_text
     }
 
