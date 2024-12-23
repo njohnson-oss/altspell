@@ -37,6 +37,21 @@ def _verify_hcaptcha(token):
     return resp.json().get('success') is True
 
 def require_hcaptcha(func):
+    """
+    A decorator applied to routes that require hCaptcha validation.
+
+    The decorator checks the JSON request object for a valid hCaptcha token before allowing the
+    request to proceed. The hCaptcha token is expected in the JSON key: 'hcaptcha_token'. hCaptcha
+    verification can be bypassed by setting ENABLE_HCAPTCHA to False in the app instance config.
+
+    Parameters:
+        func: Function for which hCaptcha is required.
+
+    Returns:
+        function: If the hCaptcha is verified successfully, func is returned.
+        Response: If the hCaptcha is missing or fails to verify, a '400 Bad Request' Response is
+        returned.
+    """
     @wraps(func)
     def wrapper(*args, **kwargs):
         if current_app.config['ENABLE_HCAPTCHA'] is not True:
