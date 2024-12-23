@@ -27,19 +27,19 @@ from sqlalchemy.ext.compiler import compiles
 from . import db
 
 
-class utcnow(expression.FunctionElement):
+class UTCnow(expression.FunctionElement):
     type = db.DateTime()
     inherit_cache = True
 
-@compiles(utcnow, "postgresql")
+@compiles(UTCnow, "postgresql")
 def pg_utcnow(_element, _compiler, **kw):
     return "TIMEZONE('utc', CURRENT_TIMESTAMP)"
 
-@compiles(utcnow, "mssql")
+@compiles(UTCnow, "mssql")
 def ms_utcnow(_element, _compiler, **kw):
     return "GETUTCDATE()"
 
-@compiles(utcnow, "sqlite")
+@compiles(UTCnow, "sqlite")
 def sqlite_utcnow(_element, _compiler, **kw):
     return "(STRFTIME('%Y-%m-%d %H:%M:%f', 'NOW'))"
 
@@ -56,7 +56,7 @@ class Conversion(db.Model):
 
     id: Mapped[uuid] = mapped_column(db.Uuid, primary_key=True)
     creation_date: Mapped[datetime.datetime] = mapped_column(db.DateTime(),
-                                                             server_default=utcnow())
+                                                             server_default=UTCnow())
     to_altspell: Mapped[bool]
     tradspell_text: Mapped[str]
     altspell_text: Mapped[str]
