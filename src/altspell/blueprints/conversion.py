@@ -173,6 +173,49 @@ def convert():
 
 @bp.route('/conversions/<uuid:conversion_id>', methods=['GET'])
 def get_conversion(conversion_id):
+    """
+    Endpoint to get saved conversion.
+
+    This endpoint accepts a GET request with the appended conversion ID (uuid).
+
+    JSON Response Parameters:
+    - id (uuid): ID of the conversion.
+    - creation_date (DateTime): Date and time conversion was inserted into the database.
+    - altspelling (str): Name of conversion Plugin.
+    - to_altspell (bool): Indicates the direction of conversion.
+    - tradspell_text (str): Text in traditional English spelling (necessary if to_altspell is True).
+    - altspell_text (str): Text in alternative English spelling (necessary if to_altspell is False).
+
+    Returns:
+        Response: A JSON Response object containing the converted English text.
+
+    Example:
+
+        Request:
+        GET /api/conversions/7d9be066-6a0b-4459-9242-86dce2df6775
+        Request Body: {
+            'altspelling': 'lytspel',
+            'to_altspell': True,
+            'tradspell_text': 'Hello world!',
+            'save': True
+        }
+
+        Response:
+        GET /api/conversions
+        Response Body: {
+            'id': '7d9be066-6a0b-4459-9242-86dce2df6775'
+            'creation_date': '2020-10-21T05:39:20+0000'
+            'altspelling': 'lytspel',
+            'to_altspell': True,
+            'tradspell_text': 'Hello world!',
+            'altspell_text': 'Heló wurld!'
+        }
+
+    HTTP Status Codes:
+    - 200 OK: Converted English text is returned.
+    - 400 Bad Request: Conversion ID is not a UUID.
+    - 404 Not Found: Conversion not found.
+    """
     conversion = db.session.query(Conversion).filter_by(id=conversion_id).one_or_404()
 
     resp = {
