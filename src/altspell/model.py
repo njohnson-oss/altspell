@@ -65,14 +65,35 @@ class Altspelling(db.Model):
     )
 
 class Conversion(db.Model):
+    """
+    A table containing the saved conversions.
+    """
     __tablename__ = "conversion"
 
-    id: Mapped[uuid] = mapped_column(db.Uuid, primary_key=True)
-    creation_date: Mapped[datetime.datetime] = mapped_column(db.DateTime(),
-                                                             server_default=UTCnow())
-    to_altspell: Mapped[bool]
-    tradspell_text: Mapped[str]
-    altspell_text: Mapped[str]
-    altspelling_id: Mapped[int] = mapped_column(db.ForeignKey('altspelling.id'))
+    id: Mapped[uuid] = mapped_column(
+        db.Uuid,
+        primary_key=True,
+        doc='Sequence number representing conversion.'
+    )
+    creation_date: Mapped[datetime.datetime] = mapped_column(
+        db.DateTime(),
+        server_default=UTCnow(),
+        doc='DateTime representing when the conversion was inserted into the database.'
+    )
+    to_altspell: Mapped[bool] = mapped_column(
+        bool,
+        doc='Boolean representing which direction the conversion occurred in. I.e: Either ' \
+            'traditional English spelling => alternative English spelling or alternative ' \
+            'English spelling => traditional English spelling.'
+    )
+    tradspell_text: Mapped[str] = mapped_column(str, doc='Text in traditional English spelling.')
+    altspell_text: Mapped[str] = mapped_column(str, doc='Text in alternative English spelling.')
+    altspelling_id: Mapped[int] = mapped_column(
+        db.ForeignKey('altspelling.id'),
+        doc='Sequence number representing alternative spelling of English.'
+    )
 
-    altspelling: Mapped["Altspelling"] = relationship(back_populates="conversions")
+    altspelling: Mapped["Altspelling"] = relationship(
+        back_populates="conversions",
+        doc='The alternative spelling of English that was used by the conversion.'
+    )
