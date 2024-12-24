@@ -193,12 +193,6 @@ def get_conversion(conversion_id):
 
         Request:
         GET /api/conversions/7d9be066-6a0b-4459-9242-86dce2df6775
-        Request Body: {
-            'altspelling': 'lytspel',
-            'to_altspell': True,
-            'tradspell_text': 'Hello world!',
-            'save': True
-        }
 
         Response:
         GET /api/conversions
