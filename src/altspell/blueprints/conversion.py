@@ -61,21 +61,21 @@ def convert():
         Request:
         POST /api/conversions
         Request Body: {
-            'altspelling': 'lytspel',
-            'to_altspell': True,
-            'tradspell_text': 'Hello world!',
-            'save': True
+            "altspelling": "lytspel",
+            "to_altspell': True,
+            "tradspell_text": "Hello world!",
+            "save": True
         }
 
         Response:
         POST /api/conversions
         Response Body: {
-            'id': '7d9be066-6a0b-4459-9242-86dce2df6775'
-            'creation_date': '2020-10-21T05:39:20+0000'
-            'altspelling': 'lytspel',
-            'to_altspell': True,
-            'tradspell_text': 'Hello world!',
-            'altspell_text': 'Heló wurld!'
+            "id": "7d9be066-6a0b-4459-9242-86dce2df6775"
+            "creation_date': "2020-10-21T05:39:20+0000"
+            "altspelling": "lytspel",
+            "to_altspell": True,
+            "tradspell_text": "Hello world!",
+            "altspell_text": "Heló wurld!"
         }
 
     HTTP Status Codes:
@@ -197,12 +197,12 @@ def get_conversion(conversion_id):
         Response:
         GET /api/conversions
         Response Body: {
-            'id': '7d9be066-6a0b-4459-9242-86dce2df6775'
-            'creation_date': '2020-10-21T05:39:20+0000'
-            'altspelling': 'lytspel',
-            'to_altspell': True,
-            'tradspell_text': 'Hello world!',
-            'altspell_text': 'Heló wurld!'
+            "id": "7d9be066-6a0b-4459-9242-86dce2df6775"
+            "creation_date": "2020-10-21T05:39:20+0000"
+            "altspelling": "lytspel",
+            "to_altspell": True,
+            "tradspell_text": "Hello world!",
+            "altspell_text": "Heló wurld!"
         }
 
     HTTP Status Codes:
