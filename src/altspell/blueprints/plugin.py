@@ -24,5 +24,10 @@ bp = Blueprint("plugins", __name__, url_prefix='/api')
 
 @bp.route('/plugins', methods=['GET'])
 def get_plugins():
-    plugins = current_app.plugin_instances.keys()
-    return jsonify(plugins)
+    plugins = list(current_app.plugin_instances.keys())
+
+    resp = {
+        'plugins': plugins
+    }
+
+    return jsonify(resp)
