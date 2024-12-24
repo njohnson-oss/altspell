@@ -110,12 +110,12 @@ def convert():
 
     conv_len_limit = current_app.config['CONVERSION_LENGTH_LIMIT']
 
-    # get conversion functions
     selected_plugin = current_app.plugin_instances.get(altspelling)
 
     if selected_plugin is None:
         return {'error': 'Selected plugin is not initialized'}
 
+    # get conversion functions
     convert_to_altspell = selected_plugin.convert_to_altspell
     convert_to_tradspell = selected_plugin.convert_to_tradspell
 
