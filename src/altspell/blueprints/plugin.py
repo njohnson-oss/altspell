@@ -24,6 +24,31 @@ bp = Blueprint("plugins", __name__, url_prefix='/api')
 
 @bp.route('/plugins', methods=['GET'])
 def get_plugins():
+    """
+    Endpoint that returns a list of enabled plugins.
+
+    This endpoint accepts a GET request and returns a list of enabled plugins in the JSON Response.
+
+    Returns:
+        Response: A JSON Response object containing a list of enabled plugins.
+
+    Example:
+
+        Request:
+        GET /api/plugins
+
+        Response:
+        GET /api/plugins
+        Response Body: {
+            "plugins": [
+                 "lytspel",
+                 "soundspel"
+            ]
+        }
+
+    HTTP Status Codes:
+    - 200 OK: List of plugins is returned.
+    """
     plugins = list(current_app.plugin_instances.keys())
 
     resp = {
