@@ -43,12 +43,26 @@ def sqlite_utcnow(_element, _compiler, **_kw):
     return "(STRFTIME('%Y-%m-%d %H:%M:%f', 'NOW'))"
 
 class Altspelling(db.Model):
+    """
+    A table containing the enabled alternate spellings of English.
+    """
     __tablename__ = "altspelling"
 
-    id: Mapped[int] = mapped_column(db.Integer, primary_key=True)
-    name: Mapped[str] = mapped_column(db.String, unique=True)
+    id: Mapped[int] = mapped_column(
+        db.Integer,
+        primary_key=True,
+        doc='Sequence number representing alternative spelling of English.'
+    )
+    name: Mapped[str] = mapped_column(
+        db.String,
+        unique=True,
+        doc='Name of alternative spelling of English.'
+    )
 
-    conversions: Mapped[List["Conversion"]] = relationship(back_populates="altspelling")
+    conversions: Mapped[List["Conversion"]] = relationship(
+        back_populates="altspelling",
+        doc='All conversions that use the alternative spelling of English.'
+    )
 
 class Conversion(db.Model):
     __tablename__ = "conversion"
