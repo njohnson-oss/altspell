@@ -23,7 +23,6 @@ from typing import List
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import expression
 from sqlalchemy.ext.compiler import compiles
-
 from . import db
 
 
