@@ -20,6 +20,7 @@
 import uuid
 import datetime
 from typing import List
+from sqlalchemy import Boolean, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import expression
 from sqlalchemy.ext.compiler import compiles
@@ -84,13 +85,19 @@ class Conversion(db.Model):
         doc='DateTime representing when the conversion was inserted into the database.'
     )
     to_altspell: Mapped[bool] = mapped_column(
-        bool,
+        Boolean,
         doc='Boolean representing which direction the conversion occurred in. I.e: Either ' \
             'traditional English spelling => alternative English spelling or alternative ' \
             'English spelling => traditional English spelling.'
     )
-    tradspell_text: Mapped[str] = mapped_column(str, doc='Text in traditional English spelling.')
-    altspell_text: Mapped[str] = mapped_column(str, doc='Text in alternative English spelling.')
+    tradspell_text: Mapped[str] = mapped_column(
+        String,
+        doc='Text in traditional English spelling.'
+    )
+    altspell_text: Mapped[str] = mapped_column(
+        String,
+        doc='Text in alternative English spelling.'
+    )
     altspelling_id: Mapped[int] = mapped_column(
         db.ForeignKey('altspelling.id'),
         doc='Sequence number representing alternative spelling of English.'
