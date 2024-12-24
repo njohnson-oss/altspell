@@ -36,7 +36,7 @@ class UTCnow(expression.FunctionElement):
 def pg_utcnow(_element, _compiler, **_kw):
     """Compiles the `UTCnow` expression to the PostgreSQL-specific SQL syntax for retrieving the
     UTC timestamp."""
-    return "TIMEZONE('utc', CURRENT_TIMESTAMP)"
+    return "date_trunc('second', TIMEZONE('utc', CURRENT_TIMESTAMP))"
 
 @compiles(UTCnow, "mssql")
 def ms_utcnow(_element, _compiler, **_kw):
