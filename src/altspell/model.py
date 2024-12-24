@@ -48,7 +48,7 @@ def ms_utcnow(_element, _compiler, **_kw):
 def sqlite_utcnow(_element, _compiler, **_kw):
     """Compiles the `UTCnow` expression to the Sqlite-specific SQL syntax for retrieving the UTC
     timestamp."""
-    return "(STRFTIME('%Y-%m-%d %H:%M:%f', 'NOW'))"
+    return "(STRFTIME('%Y-%m-%d %H:%M:%S', 'NOW'))"
 
 class Altspelling(db.Model):
     """A table containing the enabled alternate spellings of English."""
