@@ -42,7 +42,7 @@ def pg_utcnow(_element, _compiler, **_kw):
 def ms_utcnow(_element, _compiler, **_kw):
     """Compiles the `UTCnow` expression to the Microsoft SQL-specific SQL syntax for retrieving the
     UTC timestamp."""
-    return "GETUTCDATE()"
+    return "GETUTCDATE() AS SMALLDATETIME"
 
 @compiles(UTCnow, "sqlite")
 def sqlite_utcnow(_element, _compiler, **_kw):
