@@ -50,9 +50,7 @@ def sqlite_utcnow(_element, _compiler, **_kw):
     return "(STRFTIME('%Y-%m-%d %H:%M:%f', 'NOW'))"
 
 class Altspelling(db.Model):
-    """
-    A table containing the enabled alternate spellings of English.
-    """
+    """A table containing the enabled alternate spellings of English."""
     __tablename__ = "altspelling"
 
     id: Mapped[int] = mapped_column(
@@ -72,9 +70,7 @@ class Altspelling(db.Model):
     )
 
 class Conversion(db.Model):
-    """
-    A table containing the saved conversions.
-    """
+    """A table containing the saved conversions."""
     __tablename__ = "conversion"
 
     id: Mapped[uuid] = mapped_column(
