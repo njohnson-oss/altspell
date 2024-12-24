@@ -27,19 +27,26 @@ from . import db
 
 
 class UTCnow(expression.FunctionElement):
+    """A construct representing the current UTC timestamp."""
     type = db.DateTime()
     inherit_cache = True
 
 @compiles(UTCnow, "postgresql")
 def pg_utcnow(_element, _compiler, **_kw):
+    """Compiles the `UTCnow` expression to the PostgreSQL-specific SQL syntax for retrieving the
+    UTC timestamp."""
     return "TIMEZONE('utc', CURRENT_TIMESTAMP)"
 
 @compiles(UTCnow, "mssql")
 def ms_utcnow(_element, _compiler, **_kw):
+    """Compiles the `UTCnow` expression to the Microsoft SQL-specific SQL syntax for retrieving the
+    UTC timestamp."""
     return "GETUTCDATE()"
 
 @compiles(UTCnow, "sqlite")
 def sqlite_utcnow(_element, _compiler, **_kw):
+    """Compiles the `UTCnow` expression to the Sqlite-specific SQL syntax for retrieving the UTC
+    timestamp."""
     return "(STRFTIME('%Y-%m-%d %H:%M:%f', 'NOW'))"
 
 class Altspelling(db.Model):
