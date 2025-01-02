@@ -23,25 +23,9 @@ dependencies = [
     "pytz"
 ]
 
-[project.optional-dependencies]
-test = ["pytest"]
-
 [build-system]
 requires = ["flit_core<4"]
 build-backend = "flit_core.buildapi"
 
 [tool.flit.module]
 name = "altspell"
-
-[tool.flit.sdist]
-include = [
-    "tests/",
-]
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-filterwarnings = ["error"]
-
-[tool.coverage.run]
-branch = true
-source = ["altspell", "tests"]
