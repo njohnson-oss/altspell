@@ -22,7 +22,7 @@ from abc import ABC, abstractmethod
 
 class PluginBase(ABC):
     """
-    An interface for converter plugins.
+    An interface for converter plugins. Plugin modules must name its concrete class 'Plugin'.
 
     Methods:
         convert_to_altspell(tradspell_text: str) -> str:
