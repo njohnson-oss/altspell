@@ -19,6 +19,7 @@
 
 from abc import ABC, abstractmethod
 import spacy
+from flask import current_app
 
 
 class PluginBase(ABC):
@@ -38,6 +39,7 @@ class PluginBase(ABC):
         # Load spaCy without any unnecessary components
         nlp = spacy.load('en_core_web_sm')
     except OSError:
+        current_app.logger.info('Downloading language model for spaCy PoS tagger...')
         from spacy.cli import download  # pylint: disable=import-outside-toplevel
         download('en_core_web_sm')
         nlp = spacy.load('en_core_web_sm')
