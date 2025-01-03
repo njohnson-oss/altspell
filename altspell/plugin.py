@@ -18,6 +18,7 @@
 '''
 
 from abc import ABC, abstractmethod
+import spacy
 
 
 class PluginBase(ABC):
@@ -32,6 +33,15 @@ class PluginBase(ABC):
             Thread-safe method for converting from alternative English spelling to traditional
             English spelling.
     """
+
+    try:
+        # Load spaCy without any unnecessary components
+        nlp = spacy.load('en_core_web_sm')
+    except OSError:
+        from spacy.cli import download  # pylint: disable=import-outside-toplevel
+        download('en_core_web_sm')
+        nlp = spacy.load('en_core_web_sm')
+
     @abstractmethod
     def convert_to_altspell(self, tradspell_text: str) -> str:
         """
