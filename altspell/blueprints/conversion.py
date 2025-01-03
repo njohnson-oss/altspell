@@ -29,7 +29,7 @@ bp = Blueprint("conversions", __name__, url_prefix='/api')
 
 @bp.route('/conversions', methods=['POST'])
 @require_hcaptcha
-def convert():
+async def convert():
     """
     Endpoint to convert traditional English spelling to alternative English spelling and vice
     versa.
@@ -172,7 +172,7 @@ def convert():
     return resp
 
 @bp.route('/conversions/<uuid:conversion_id>', methods=['GET'])
-def get_conversion(conversion_id):
+async def get_conversion(conversion_id):
     """
     Endpoint to get saved conversion.
 
