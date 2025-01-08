@@ -156,6 +156,11 @@ def convert():
     }
 
     if save:
+        if to_altspell is True and tradspell_text == '':
+            return {'error': 'Cannot save an empty translation'}, 400
+        if to_altspell is False and altspell_text == '':
+            return {'error': 'Cannot save an empty translation'}, 400
+
         conversion = Conversion(
             id=uuid.uuid4(),
             to_altspell=to_altspell,
