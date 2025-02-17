@@ -84,9 +84,15 @@ def create_app(test_config=None):
             plugin_mod = AVAILABLE_PLUGINS[plugin]
 
             # validate plugin implementation
-            if not hasattr(plugin_mod, 'Plugin') or not issubclass(plugin_mod.Plugin, PluginBase):
+            if not hasattr(plugin_mod, 'Plugin'):
                 app.logger.error(
-                    'Enabled plugin excluded for incorrect implementation: %s', plugin
+                    'Enabled plugin excluded for missing "Plugin" attribute: %s', plugin
+                )
+                continue
+
+            if not issubclass(plugin_mod.Plugin, PluginBase):
+                app.logger.error(
+                    'Enabled plugin excluded for not being a subclass of PluginBase: %s', plugin
                 )
                 continue
 
