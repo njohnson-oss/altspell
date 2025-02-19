@@ -39,20 +39,14 @@ def get_plugins():
 
         Response:
         GET /api/plugins
-        Response Body: {
-            "plugins": [
-                 "lytspel",
-                 "soundspel"
-            ]
-        }
+        Response Body: [
+            "lytspel",
+            "soundspel"
+        ]
 
     HTTP Status Codes:
     - 200 OK: List of plugins is returned.
     """
     plugins = list(current_app.plugin_instances.keys())
 
-    resp = {
-        'plugins': plugins
-    }
-
-    return jsonify(resp)
+    return jsonify(plugins)
