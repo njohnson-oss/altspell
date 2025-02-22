@@ -17,6 +17,7 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
+from typing import List
 from flask import current_app
 
 
@@ -24,6 +25,6 @@ class PluginService:
     """A service providing functionality for plugin endpoints."""
 
     @staticmethod
-    def get_plugins():
+    def get_plugins() -> List[str]:
         """Returns a list of active plugins"""
         return list(current_app.plugin_instances.keys())
