@@ -25,6 +25,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from sqlalchemy.exc import IntegrityError
 from .plugin import PluginBase
+from .containers import Container
 
 
 AVAILABLE_PLUGINS = {
@@ -39,6 +40,9 @@ db = SQLAlchemy()
 def create_app(test_config=None):
     """Create and configure an instance of the Flask application."""
     app = Flask(__name__, instance_relative_config=True)
+
+    # create container for dependency injection
+    app.container = Container()
 
     # allow CORS for all domains on all routes
     CORS(app)

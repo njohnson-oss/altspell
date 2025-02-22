@@ -17,13 +17,17 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
-from flask import Blueprint, jsonify, current_app
+from flask import Blueprint, jsonify
+from dependency_injector.wiring import Provide, inject
+from ..services import PluginService
+from ..containers import Container
 
 
 bp = Blueprint("plugins", __name__, url_prefix='/api')
 
 @bp.route('/plugins', methods=['GET'])
-def get_plugins():
+@inject
+def get_plugins(plugin_service: PluginService = Provide[Container.plugin_service]):
     """
     Endpoint that returns a list of enabled plugins.
 
@@ -47,6 +51,6 @@ def get_plugins():
     HTTP Status Codes:
     - 200 OK: List of plugins is returned.
     """
-    plugins = list(current_app.plugin_instances.keys())
+    plugins = plugin_service.get_plugins()
 
     return jsonify(plugins)

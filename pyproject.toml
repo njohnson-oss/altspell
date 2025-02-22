@@ -16,6 +16,7 @@ classifiers = [
   "Operating System :: OS Independent",
 ]
 dependencies = [
+    "dependency_injector",
     "flask",
     "flask_sqlalchemy",
     "flask_cors",
