@@ -21,7 +21,6 @@ import uuid
 from flask import Blueprint, request, current_app
 import pytz
 from dependency_injector.wiring import inject, Provide
-from ..model import Altspelling, Conversion
 from ..utils.hcaptcha import require_hcaptcha
 from ..containers import Container
 from ..services import ConversionService
