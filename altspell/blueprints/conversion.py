@@ -24,7 +24,14 @@ from dependency_injector.wiring import inject, Provide
 from ..utils.hcaptcha import require_hcaptcha
 from ..containers import Container
 from ..services import ConversionService
-from ..exceptions import NotFoundError, MissingKeyError, InvalidTypeError, EmptyConversionError, PluginUnavailableError, AltspellingNotFoundError
+from ..exceptions import (
+    NotFoundError,
+    MissingKeyError,
+    InvalidTypeError,
+    EmptyConversionError,
+    PluginUnavailableError,
+    AltspellingNotFoundError
+)
 
 
 bp = Blueprint("conversions", __name__, url_prefix='/api')
