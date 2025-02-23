@@ -18,7 +18,7 @@
 '''
 
 import uuid
-from flask import Blueprint, request, current_app
+from flask import Blueprint, request
 import pytz
 from dependency_injector.wiring import inject, Provide
 from ..utils.hcaptcha import require_hcaptcha
