@@ -43,7 +43,7 @@ class MissingKeyError(Exception):
 class InvalidTypeError(Exception):
 
     def __init__(self, key_name: str, cls: Type):
-        super().__init__(f"Key '{key_name}' must be of type '{cls}'")
+        super().__init__(f"Key '{key_name}' must be of type '{cls.__name__}'")
 
 class EmptyConversionError(Exception):
 
