@@ -22,7 +22,7 @@ from flask import Blueprint, request, current_app
 import pytz
 from dependency_injector.wiring import inject, Provide
 from ..model import Altspelling, Conversion
-from ..hcaptcha import require_hcaptcha
+from ..utils.hcaptcha import require_hcaptcha
 from ..containers import Container
 from ..services import ConversionService
 from ..exceptions import NotFoundError, MissingKeyError, InvalidTypeError, EmptyConversionError, PluginUnavailableError, AltspellingNotFoundError
