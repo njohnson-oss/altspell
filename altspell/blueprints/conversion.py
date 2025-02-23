@@ -20,16 +20,22 @@
 import uuid
 from flask import Blueprint, request, current_app
 import pytz
+from dependency_injector.wiring import inject, Provide
 from ..model import Altspelling, Conversion
-from .. import db
 from ..hcaptcha import require_hcaptcha
+from ..containers import Container
+from ..services import ConversionService
+from ..exceptions import NotFoundError, MissingKeyError, InvalidTypeError, EmptyConversionError, PluginUnavailableError, AltspellingNotFoundError
 
 
 bp = Blueprint("conversions", __name__, url_prefix='/api')
 
 @bp.route('/conversions', methods=['POST'])
 @require_hcaptcha
-def convert():
+@inject
+def convert(
+    conversion_service: ConversionService = Provide[Container.conversion_service]
+):
     """
     Endpoint to convert traditional English spelling to alternative English spelling and vice
     versa.
@@ -80,104 +86,53 @@ def convert():
 
     HTTP Status Codes:
     - 200 OK: Converted English text is returned.
-    - 400 Bad Request: JSON request is malformed or requested plugin method is unimplemented.
+    - 400 Bad Request: JSON request is malformed or requested plugin method is unavailable.
     """
     data = request.json
 
     save = data.get('save')
+    altspelling = data.get('altspelling')
     to_altspell = data.get('to_altspell')
     tradspell_text = data.get('tradspell_text')
     altspell_text = data.get('altspell_text')
-    altspelling = data.get('altspelling')
 
-    # assign default save value
-    if save is None:
-        save = False
-
-    if altspelling is None:
-        return {'error': 'Missing key: altspelling'}, 400
-
-    if not isinstance(altspelling, str):
-        return {'error': 'Key must be a string: altspelling'}, 400
-
-    altspelling_id = db.session.query(Altspelling).filter_by(name=altspelling).one_or_404().id
-
-    if to_altspell is None:
-        return {'error': 'Missing key: to_altspell'}, 400
-
-    if not isinstance(to_altspell, bool):
-        return {'error': 'Key must be a boolean: to_altspell'}, 400
-
-    conv_len_limit = current_app.config['CONVERSION_LENGTH_LIMIT']
-
-    selected_plugin = current_app.plugin_instances.get(altspelling)
-
-    if selected_plugin is None:
-        return {'error': 'Selected plugin is not initialized'}
-
-    # get conversion functions
-    convert_to_altspell = selected_plugin.convert_to_altspell
-    convert_to_tradspell = selected_plugin.convert_to_tradspell
-
-    if to_altspell:
-        if tradspell_text is None:
-            return {'error': 'Missing key: tradspell_text'}, 400
-        if not isinstance(tradspell_text, str):
-            return {'error': 'Key must be a string: to_altspell'}, 400
-
-        tradspell_text = tradspell_text[:conv_len_limit]
-
-        try:
-            altspell_text = convert_to_altspell(tradspell_text)
-        except NotImplementedError:
-            return {
-                'error': 'tradspell -> altspell conversion is not implemented for this plugin'
-            }, 400
-    else:
-        if altspell_text is None:
-            return {'error': 'Missing key: altspell_text'}, 400
-        if not isinstance(altspell_text, str):
-            return {'error': 'Key must be string: tradspell_text'}, 400
-
-        altspell_text = altspell_text[:conv_len_limit]
-
-        try:
-            tradspell_text = convert_to_tradspell(altspell_text)
-        except NotImplementedError:
-            return {
-                'error': 'altspell -> tradspell conversion is not implemented for this plugin'
-            }, 400
+    try:
+        conversion = conversion_service.convert(
+            altspelling,
+            to_altspell,
+            tradspell_text,
+            altspell_text,
+            save
+        )
+    except (
+        MissingKeyError,
+        InvalidTypeError,
+        EmptyConversionError,
+        NotImplementedError,
+        PluginUnavailableError,
+        AltspellingNotFoundError
+    ) as e:
+        return {'error': str(e)}, 400
 
     resp = {
-        'altspelling': altspelling,
-        'to_altspell': to_altspell,
-        'tradspell_text': tradspell_text,
-        'altspell_text': altspell_text
+        'altspelling': conversion.altspelling.name,
+        'to_altspell': conversion.to_altspell,
+        'tradspell_text': conversion.tradspell_text,
+        'altspell_text': conversion.altspell_text
     }
 
     if save:
-        if to_altspell is True and tradspell_text == '':
-            return {'error': 'Cannot save an empty translation'}, 400
-        if to_altspell is False and altspell_text == '':
-            return {'error': 'Cannot save an empty translation'}, 400
-
-        conversion = Conversion(
-            id=uuid.uuid4(),
-            to_altspell=to_altspell,
-            tradspell_text=tradspell_text,
-            altspell_text=altspell_text,
-            altspelling_id=altspelling_id
-        )
-        db.session.add(conversion)
-        db.session.commit()
-
         resp['id'] = conversion.id
         resp['creation_date'] = pytz.utc.localize(conversion.creation_date).isoformat()
 
     return resp
 
 @bp.route('/conversions/<uuid:conversion_id>', methods=['GET'])
-def get_conversion(conversion_id):
+@inject
+def get_conversion(
+    conversion_id: uuid,
+    conversion_service: ConversionService = Provide[Container.conversion_service]
+):
     """
     Endpoint to get saved conversion.
 
@@ -215,7 +170,10 @@ def get_conversion(conversion_id):
     - 400 Bad Request: Conversion ID is not a UUID.
     - 404 Not Found: Conversion not found.
     """
-    conversion = db.session.query(Conversion).filter_by(id=conversion_id).one_or_404()
+    try:
+        conversion = conversion_service.get_conversion_by_id(conversion_id)
+    except NotFoundError:
+        return {'error': 'Conversion not found'}, 404
 
     resp = {
         'id': conversion.id,

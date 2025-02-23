@@ -21,11 +21,9 @@ import importlib
 import pkgutil
 import os
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from sqlalchemy.exc import IntegrityError
 from .plugin import PluginBase
-from .containers import Container
 
 
 AVAILABLE_PLUGINS = {
@@ -35,17 +33,9 @@ AVAILABLE_PLUGINS = {
     if name.startswith('altspell_')
 }
 
-db = SQLAlchemy()
-
 def create_app(test_config=None):
     """Create and configure an instance of the Flask application."""
     app = Flask(__name__, instance_relative_config=True)
-
-    # create container for dependency injection
-    app.container = Container()
-
-    # allow CORS for all domains on all routes
-    CORS(app)
 
     app.config.from_mapping(
         # a default secret that should be overridden by instance config
@@ -67,19 +57,22 @@ def create_app(test_config=None):
         # load the test config if passed in
         app.config.update(test_config)
 
+    with app.app_context():
+        from .containers import Container  # pylint: disable=import-outside-toplevel
+
+        # create container for dependency injection
+        container = Container()
+
+    app.container = container
+
+    # allow CORS for all domains on all routes
+    CORS(app)
+
     # ensure the instance folder exists
     try:
         os.makedirs(app.instance_path)
     except OSError:
         pass
-
-    db.init_app(app)
-
-    from . import model  # pylint: disable=import-outside-toplevel
-
-    with app.app_context():
-        # create database tables
-        db.create_all()
 
     app.plugin_instances = {}
 
@@ -100,15 +93,9 @@ def create_app(test_config=None):
                 )
                 continue
 
-            altspelling = model.Altspelling(name=plugin)
-
-            # populate altspelling table with enabled plugin
             with app.app_context():
-                try:
-                    db.session.add(altspelling)
-                    db.session.commit()
-                except IntegrityError:
-                    db.session.rollback()
+                from .utils.populate_altspelling_table import populate_altspelling_table  # pylint: disable=import-outside-toplevel
+                populate_altspelling_table(plugin)
 
             # initialize plugin
             app.logger.info('Initializing plugin: %s...', plugin)

@@ -20,16 +20,16 @@
 import uuid
 import datetime
 from typing import List
-from sqlalchemy import Boolean, String
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import expression
 from sqlalchemy.ext.compiler import compiles
-from . import db
+from .database import Base
 
 
 class UTCnow(expression.FunctionElement):
     """A construct representing the current UTC timestamp."""
-    type = db.DateTime()
+    type = DateTime()
     inherit_cache = True
 
 @compiles(UTCnow, "postgresql")
@@ -50,17 +50,17 @@ def sqlite_utcnow(_element, _compiler, **_kw):
     timestamp."""
     return "(STRFTIME('%Y-%m-%d %H:%M:%S', 'NOW'))"
 
-class Altspelling(db.Model):
+class Altspelling(Base):
     """A table containing the enabled alternate spellings of English."""
     __tablename__ = "altspelling"
 
     id: Mapped[int] = mapped_column(
-        db.Integer,
+        Integer,
         primary_key=True,
         doc='Sequence number representing alternative spelling of English.'
     )
     name: Mapped[str] = mapped_column(
-        db.String,
+        String,
         unique=True,
         doc='Name of alternative spelling of English.'
     )
@@ -70,17 +70,17 @@ class Altspelling(db.Model):
         doc='All conversions that use the alternative spelling of English.'
     )
 
-class Conversion(db.Model):
+class Conversion(Base):
     """A table containing the saved conversions."""
     __tablename__ = "conversion"
 
     id: Mapped[uuid] = mapped_column(
-        db.Uuid,
+        Uuid,
         primary_key=True,
         doc='Sequence number representing conversion.'
     )
     creation_date: Mapped[datetime.datetime] = mapped_column(
-        db.DateTime(),
+        DateTime(),
         server_default=UTCnow(),
         doc='DateTime representing when the conversion was inserted into the database.'
     )
@@ -99,7 +99,7 @@ class Conversion(db.Model):
         doc='Text in alternative English spelling.'
     )
     altspelling_id: Mapped[int] = mapped_column(
-        db.ForeignKey('altspelling.id'),
+        ForeignKey('altspelling.id'),
         doc='Sequence number representing alternative spelling of English.'
     )
 

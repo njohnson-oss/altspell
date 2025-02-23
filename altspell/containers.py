@@ -18,14 +18,41 @@
 '''
 
 from dependency_injector import containers, providers
-from . import services
+from flask import current_app
+from .services import PluginService, ConversionService
+from .repositories import AltspellingRepository, ConversionRepository
+from .database import Database
 
 
 class Container(containers.DeclarativeContainer):
     """Container for injecting dependencies into blueprint modules."""
 
-    wiring_config = containers.WiringConfiguration(modules=[".blueprints.plugin"])
+    wiring_config = containers.WiringConfiguration(
+        modules=[
+            ".blueprints.plugin", 
+            ".blueprints.conversion",
+            ".utils.populate_altspelling_table"
+        ]
+    )
+
+    db = providers.Singleton(Database, db_url=current_app.config["SQLALCHEMY_DATABASE_URI"])
 
     plugin_service = providers.Factory(
-        services.PluginService
+        PluginService
+    )
+
+    altspelling_repository = providers.Singleton(
+        AltspellingRepository,
+        session_factory=db.provided.session
+    )
+
+    conversion_repository = providers.Singleton(
+        ConversionRepository,
+        session_factory=db.provided.session
+    )
+
+    conversion_service = providers.Factory(
+        ConversionService,
+        conversion_repository=conversion_repository,
+        altspelling_repository=altspelling_repository
     )
