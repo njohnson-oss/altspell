@@ -23,7 +23,9 @@ from flask import current_app
 from sqlalchemy.exc import IntegrityError
 from .repositories import ConversionRepository, AltspellingRepository
 from .model import Altspelling, Conversion
-from .exceptions import MissingKeyError, InvalidTypeError, EmptyConversionError, PluginUnavailableError
+from .exceptions import (
+    MissingKeyError, InvalidTypeError, EmptyConversionError, PluginUnavailableError
+)
 
 
 class PluginService:
