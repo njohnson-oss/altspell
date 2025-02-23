@@ -33,7 +33,10 @@ class PluginService:
 
     @staticmethod
     def get_plugins() -> List[str]:
-        """Returns a list of active plugins"""
+        """
+        Returns:
+            A List of active plugins.
+        """
         return list(current_app.plugin_instances.keys())
 
 class ConversionService:
