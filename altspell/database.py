@@ -28,7 +28,7 @@ Base = declarative_base()
 
 
 class Database:
-
+    """A Database object for creating the tables and managing the session."""
     def __init__(self, db_url: str) -> None:
         self._engine = create_engine(db_url)
         self._session_factory = orm.scoped_session(
@@ -40,10 +40,12 @@ class Database:
         )
 
     def create_database(self) -> None:
+        """Create all database tables."""
         Base.metadata.create_all(self._engine)
 
     @contextmanager
     def session(self) -> Callable[..., AbstractContextManager[Session]]:
+        """Manage database session."""
         session: Session = self._session_factory()
         try:
             yield session
