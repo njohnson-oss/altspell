@@ -51,9 +51,27 @@ class ConversionService:
         self._altspelling_repository: AltspellingRepository = altspelling_repository
 
     def get_conversion_by_id(self, conversion_id: uuid) -> Conversion:
+        """
+        Retrieve a Conversion by id, from the database.
+
+        Args:
+            conversion_id (uuid): Id of the Conversion to query.
+
+        Returns:
+            Conversion: A Conversion object representing the queried database record.
+        """
         return self._conversion_repository.get_by_id(conversion_id)
 
     def add_altspelling(self, altspelling: str) -> Altspelling:
+        """
+        Add an Altspelling to the database.
+
+        Args:
+            altspelling (str): Name of the Altspelling to add.
+
+        Returns:
+            Altspelling: An Altspelling object representing the added database record.
+        """
         try:
             return self._altspelling_repository.add(altspelling)
         except IntegrityError:
@@ -67,6 +85,20 @@ class ConversionService:
         altspell_text: str,
         save: bool
     ) -> Conversion:
+        """
+        Perform a conversion, optionallys saving it to the database.
+
+        Args:
+            altspelling (str): Name of the Altspelling plugin to use for conversion.
+            to_altspell (bool): If true, convert tradspell -> altspell. Otherwise convert \
+                altspell -> tradspell.
+            tradspell_text (str): Tradspell text to convert to altspell text.
+            altspell_text (str): Altspell text to convert to tradspell text.
+            save (bool): If true, persist the conversion to the database.
+
+        Returns:
+            Altspelling: An Altspelling object representing the added database record.
+        """
 
         # assign default save value
         if save is None:
