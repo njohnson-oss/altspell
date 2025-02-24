@@ -26,7 +26,7 @@ from .exceptions import ConversionNotFoundError, AltspellingNotFoundError
 
 
 class ConversionRepository:
-
+    """Repository for database operations related to conversions."""
     def __init__(
         self,
         session_factory: Callable[
@@ -43,6 +43,19 @@ class ConversionRepository:
         altspell_text: str,
         altspelling_id: int
     ) -> Conversion:
+        """
+        Add a conversion to the database.
+
+        Args:
+            to_altspell (bool): True if converted to the alternative spelling system. False if \
+                converted to traditional English spelling.
+            tradspell_text (str): Text in traditional English spelling.
+            altspell_text (str): Text in the alternative English spelling system.
+            altspelling_id (int): Id of the alternative spelling system.
+
+        Returns:
+            Conversion: The conversion object added to the database.
+        """
         with self.session_factory() as session:
             conversion = Conversion(
                 id=uuid.uuid4(),
@@ -62,6 +75,15 @@ class ConversionRepository:
             return conversion_with_altspelling
 
     def get_by_id(self, conversion_id: uuid) -> Conversion:
+        """
+        Retrieve a conversion by id.
+
+        Args:
+            conversion_id (uuid): Id of the requested conversion.
+
+        Returns:
+            Conversion: The conversion object corresponding to conversion_id.
+        """
         with self.session_factory() as session:
             conversion = (
                 session.query(Conversion)
@@ -74,7 +96,7 @@ class ConversionRepository:
             return conversion
 
 class AltspellingRepository:
-
+    """Repository for database operations related to alternative spelling systems."""
     def __init__(
         self,
         session_factory: Callable[
@@ -85,6 +107,15 @@ class AltspellingRepository:
         self.session_factory = session_factory
 
     def add(self, altspelling_name: str) -> Altspelling:
+        """
+        Add an alternative spelling system.
+
+        Args:
+            altspelling_name (str): Name of the alternative spelling system.
+
+        Returns:
+            Altspelling: The alternative spelling system object added to the database.
+        """
         with self.session_factory() as session:
             altspelling = Altspelling(name=altspelling_name)
             session.add(altspelling)
@@ -93,10 +124,20 @@ class AltspellingRepository:
             return altspelling
 
     def get_all(self):
+        """Retrieve a list of enabled alternative spelling systems."""
         with self.session_factory() as session:
             return session.query(Altspelling).all()
 
     def get_by_name(self, altspelling_name: str) -> Altspelling:
+        """
+        Retrieve an alternative spelling system object by alternative spelling system name.
+
+        Args:
+            altspelling_name (str): Name of the alternative spelling system.
+
+        Returns:
+            Altspelling: The alternative spelling system object corresponding to altspelling_name.
+        """
         with self.session_factory() as session:
             altspelling = (
                 session.query(Altspelling)
