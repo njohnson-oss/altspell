@@ -85,7 +85,7 @@ class TranslationService:
         save: bool
     ) -> Translation:
         """
-        Perform a translation, optionallys saving it to the database.
+        Perform a translation, optionally saving it to the database.
 
         Args:
             altspelling (str): Name of the Altspelling plugin to use for translation.
