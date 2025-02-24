@@ -1,6 +1,5 @@
 '''
-    Altspell  Flask web app for converting traditional English spelling to
-    an alternative spelling
+    Altspell  Flask web app for translating traditional English spelling to an alternative spelling
     Copyright (C) 2024  Nicholas Johnson
 
     This program is free software: you can redistribute it and/or modify
@@ -65,28 +64,28 @@ class Altspelling(Base):
         doc='Name of alternative spelling of English.'
     )
 
-    conversions: Mapped[List["Conversion"]] = relationship(
+    translations: Mapped[List["Translation"]] = relationship(
         back_populates="altspelling",
-        doc='All conversions that use the alternative spelling of English.'
+        doc='All translations that use the alternative spelling of English.'
     )
 
-class Conversion(Base):
-    """A table containing the saved conversions."""
-    __tablename__ = "conversion"
+class Translation(Base):
+    """A table containing the saved translations."""
+    __tablename__ = "translation"
 
     id: Mapped[uuid] = mapped_column(
         Uuid,
         primary_key=True,
-        doc='Sequence number representing conversion.'
+        doc='Sequence number representing translation.'
     )
     creation_date: Mapped[datetime.datetime] = mapped_column(
         DateTime(),
         server_default=UTCnow(),
-        doc='DateTime representing when the conversion was inserted into the database.'
+        doc='DateTime representing when the translation was inserted into the database.'
     )
     to_altspell: Mapped[bool] = mapped_column(
         Boolean,
-        doc='Boolean representing which direction the conversion occurred in. I.e: Either ' \
+        doc='Boolean representing which direction the translation occurred in. I.e: Either ' \
             'traditional English spelling => alternative English spelling or alternative ' \
             'English spelling => traditional English spelling.'
     )
@@ -104,6 +103,6 @@ class Conversion(Base):
     )
 
     altspelling: Mapped["Altspelling"] = relationship(
-        back_populates="conversions",
-        doc='The alternative spelling of English that was used by the conversion.'
+        back_populates="translations",
+        doc='The alternative spelling of English that was used by the translation.'
     )

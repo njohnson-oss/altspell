@@ -1,6 +1,5 @@
 '''
-    Altspell  Flask web app for converting traditional English spelling to
-    an alternative spelling
+    Altspell  Flask web app for translating traditional English spelling to an alternative spelling
     Copyright (C) 2024-2025  Nicholas Johnson
 
     This program is free software: you can redistribute it and/or modify
@@ -23,55 +22,58 @@ import pytz
 from dependency_injector.wiring import inject, Provide
 from ..utils.hcaptcha import require_hcaptcha
 from ..containers import Container
-from ..services import ConversionService
+from ..services import TranslationService
 from ..exceptions import (
     NotFoundError,
     MissingKeyError,
     InvalidTypeError,
-    EmptyConversionError,
+    EmptyTranslationError,
     PluginUnavailableError,
     AltspellingNotFoundError
 )
 
 
-bp = Blueprint("conversions", __name__, url_prefix='/api')
+bp = Blueprint("translations", __name__, url_prefix='/api')
 
-@bp.route('/conversions', methods=['POST'])
+@bp.route('/translations', methods=['POST'])
 @require_hcaptcha
 @inject
-def convert(
-    conversion_service: ConversionService = Provide[Container.conversion_service]
+def translate(
+    translation_service: TranslationService = Provide[Container.translation_service]
 ):
     """
-    Endpoint to convert traditional English spelling to alternative English spelling and vice
+    Endpoint to translate traditional English spelling to alternative English spelling and vice
     versa.
 
-    This endpoint accepts a POST request with a JSON request body and returns the converted English
-    text in the JSON Response. Optionally, it saves the resulting conversion in the database.
+    This endpoint accepts a POST request with a JSON request body and returns the translated
+    English text in the JSON Response. Optionally, it saves the resulting translation in the
+    database.
 
     JSON Request Parameters:
-    - altspelling (str): Name of conversion Plugin.
-    - to_altspell (bool): Indicates the direction of conversion.
-    - tradspell_text (str): Text in traditional English spelling (necessary if to_altspell is True).
-    - altspell_text (str): Text in alternative English spelling (necessary if to_altspell is False).
-    - save (bool): Indicates whether save the resulting conversion.
+    - altspelling (str): Name of translation Plugin.
+    - to_altspell (bool): Indicates the direction of translation.
+    - tradspell_text (str): Text in traditional English spelling (necessary if to_altspell is \
+        True).
+    - altspell_text (str): Text in alternative English spelling (necessary if to_altspell is \
+        False).
+    - save (bool): Indicates whether save the resulting translation.
 
     JSON Response Parameters:
-    - id (uuid): ID of the conversion. (only if 'save' was True in the request)
-    - creation_date (DateTime): Date and time conversion was inserted into the database. (only if
+    - id (uuid): ID of the translation. (only if 'save' was True in the request)
+    - creation_date (DateTime): Date and time translation was inserted into the database. (only if
                                 'save' was True in the request)
-    - altspelling (str): Name of conversion Plugin.
-    - to_altspell (bool): Indicates the direction of conversion.
+    - altspelling (str): Name of translation Plugin.
+    - to_altspell (bool): Indicates the direction of translation.
     - tradspell_text (str): Text in traditional English spelling (necessary if to_altspell is True).
     - altspell_text (str): Text in alternative English spelling (necessary if to_altspell is False).
 
     Returns:
-        Response: A JSON Response object containing the converted English text.
+        Response: A JSON Response object containing the translated English text.
 
     Example:
 
         Request:
-        POST /api/conversions
+        POST /api/translations
         Request Body: {
             "altspelling": "lytspel",
             "to_altspell': True,
@@ -80,7 +82,7 @@ def convert(
         }
 
         Response:
-        POST /api/conversions
+        POST /api/translations
         Response Body: {
             "id": "7d9be066-6a0b-4459-9242-86dce2df6775",
             "creation_date": "2020-10-21T05:39:20+00:00",
@@ -91,7 +93,7 @@ def convert(
         }
 
     HTTP Status Codes:
-    - 200 OK: Converted English text is returned.
+    - 200 OK: Translated English text is returned.
     - 400 Bad Request: JSON request is malformed or requested plugin method is unavailable.
     """
     data = request.json
@@ -103,7 +105,7 @@ def convert(
     altspell_text = data.get('altspell_text')
 
     try:
-        conversion = conversion_service.convert(
+        translation = translation_service.translate(
             altspelling,
             to_altspell,
             tradspell_text,
@@ -113,7 +115,7 @@ def convert(
     except (
         MissingKeyError,
         InvalidTypeError,
-        EmptyConversionError,
+        EmptyTranslationError,
         NotImplementedError,
         PluginUnavailableError,
         AltspellingNotFoundError
@@ -121,47 +123,47 @@ def convert(
         return {'error': str(e)}, 400
 
     resp = {
-        'altspelling': conversion.altspelling.name,
-        'to_altspell': conversion.to_altspell,
-        'tradspell_text': conversion.tradspell_text,
-        'altspell_text': conversion.altspell_text
+        'altspelling': translation.altspelling.name,
+        'to_altspell': translation.to_altspell,
+        'tradspell_text': translation.tradspell_text,
+        'altspell_text': translation.altspell_text
     }
 
     if save:
-        resp['id'] = conversion.id
-        resp['creation_date'] = pytz.utc.localize(conversion.creation_date).isoformat()
+        resp['id'] = translation.id
+        resp['creation_date'] = pytz.utc.localize(translation.creation_date).isoformat()
 
     return resp
 
-@bp.route('/conversions/<uuid:conversion_id>', methods=['GET'])
+@bp.route('/translation/<uuid:translation_id>', methods=['GET'])
 @inject
-def get_conversion(
-    conversion_id: uuid,
-    conversion_service: ConversionService = Provide[Container.conversion_service]
+def get_translation(
+    translation_id: uuid,
+    translation_service: TranslationService = Provide[Container.translation_service]
 ):
     """
-    Endpoint to get saved conversion.
+    Endpoint to get saved translation.
 
-    This endpoint accepts a GET request with the appended conversion ID (uuid).
+    This endpoint accepts a GET request with the appended translation ID (uuid).
 
     JSON Response Parameters:
-    - id (uuid): ID of the conversion.
-    - creation_date (DateTime): Date and time conversion was inserted into the database.
-    - altspelling (str): Name of conversion Plugin.
-    - to_altspell (bool): Indicates the direction of conversion.
+    - id (uuid): ID of the translation.
+    - creation_date (DateTime): Date and time translation was inserted into the database.
+    - altspelling (str): Name of translation Plugin.
+    - to_altspell (bool): Indicates the direction of translation.
     - tradspell_text (str): Text in traditional English spelling (necessary if to_altspell is True).
     - altspell_text (str): Text in alternative English spelling (necessary if to_altspell is False).
 
     Returns:
-        Response: A JSON Response object containing the converted English text.
+        Response: A JSON Response object containing the translated English text.
 
     Example:
 
         Request:
-        GET /api/conversions/7d9be066-6a0b-4459-9242-86dce2df6775
+        GET /api/translations/7d9be066-6a0b-4459-9242-86dce2df6775
 
         Response:
-        GET /api/conversions
+        GET /api/translations
         Response Body: {
             "id": "7d9be066-6a0b-4459-9242-86dce2df6775",
             "creation_date": "2020-10-21T05:39:20+0000",
@@ -172,22 +174,22 @@ def get_conversion(
         }
 
     HTTP Status Codes:
-    - 200 OK: Converted English text is returned.
-    - 400 Bad Request: Conversion ID is not a UUID.
-    - 404 Not Found: Conversion not found.
+    - 200 OK: Translated English text is returned.
+    - 400 Bad Request: Translation ID is not a UUID.
+    - 404 Not Found: Translation not found.
     """
     try:
-        conversion = conversion_service.get_conversion_by_id(conversion_id)
+        translation = translation_service.get_translation_by_id(translation_id)
     except NotFoundError:
-        return {'error': 'Conversion not found'}, 404
+        return {'error': 'Translation not found'}, 404
 
     resp = {
-        'id': conversion.id,
-        'creation_date': pytz.utc.localize(conversion.creation_date).isoformat(),
-        'altspelling': conversion.altspelling.name,
-        'to_altspell': conversion.to_altspell,
-        'tradspell_text': conversion.tradspell_text,
-        'altspell_text': conversion.altspell_text
+        'id': translation.id,
+        'creation_date': pytz.utc.localize(translation.creation_date).isoformat(),
+        'altspelling': translation.altspelling.name,
+        'to_altspell': translation.to_altspell,
+        'tradspell_text': translation.tradspell_text,
+        'altspell_text': translation.altspell_text
     }
 
     return resp

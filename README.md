@@ -1,6 +1,6 @@
 # Altspell
 
-Flask web app for converting traditional English spelling to an alternative spelling.
+Flask web app for translating traditional English spelling to an alternative spelling.
 
 ## Quick Start
 
@@ -32,15 +32,15 @@ Example HTTP requests:
 # List plugins
 curl -X GET -H "Accept: application/json" http://127.0.0.1:5000/api/plugins
 
-# Perform forward conversion and save the result in the database
+# Perform forward translation and save the result in the database
 curl -X POST -H "Accept: application/json" -H "Content-Type: application/json" -d  '{
     "tradspell_text": "Hello, world!",
     "altspelling": "lytspel",
     "to_altspell": true,
     "save": true
-}' http://127.0.0.1:5000/api/conversions
+}' http://127.0.0.1:5000/api/translations
 
 # Retrieve the saved result from the database
-# conversion_id comes from the HTTP response of the previous command
-curl -X GET -H "Accept: application/json" http://127.0.0.1:5000/api/conversions/{conversion_id}
+# translation_id comes from the HTTP response of the previous command
+curl -X GET -H "Accept: application/json" http://127.0.0.1:5000/api/translations/{translation_id}
 ```

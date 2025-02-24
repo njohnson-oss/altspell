@@ -1,6 +1,5 @@
 '''
-    Altspell  Flask web app for converting traditional English spelling to
-    an alternative spelling
+    Altspell  Flask web app for translating traditional English spelling to an alternative spelling
     Copyright (C) 2024-2025  Nicholas Johnson
 
     This program is free software: you can redistribute it and/or modify
@@ -42,8 +41,8 @@ def create_app(test_config=None):
         SECRET_KEY="dev",
         # store the database in the app instance path
         SQLALCHEMY_DATABASE_URI='sqlite:///' + os.path.join(app.instance_path, 'altspell.db'),
-        # maximum number of characters accepted for conversion
-        CONVERSION_LENGTH_LIMIT = 20000,
+        # maximum number of characters accepted for translation
+        TRANSLATION_LENGTH_LIMIT = 20000,
         # enable all plugins by default
         ENABLED_PLUGINS = AVAILABLE_PLUGINS.keys(),
         # disable CAPTCHA for test purposes
@@ -105,8 +104,8 @@ def create_app(test_config=None):
             app.logger.warning('Enabled plugin is not available: %s', plugin)
 
     # apply the blueprints to the app
-    from .blueprints import conversion  # pylint: disable=import-outside-toplevel
-    app.register_blueprint(conversion.bp)
+    from .blueprints import translation  # pylint: disable=import-outside-toplevel
+    app.register_blueprint(translation.bp)
 
     from .blueprints import plugin  # pylint: disable=import-outside-toplevel
     app.register_blueprint(plugin.bp)

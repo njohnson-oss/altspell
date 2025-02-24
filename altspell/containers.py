@@ -1,6 +1,5 @@
 '''
-    Altspell  Flask web app for converting traditional English spelling to
-    an alternative spelling
+    Altspell  Flask web app for translating traditional English spelling to an alternative spelling
     Copyright (C) 2025  Nicholas Johnson
 
     This program is free software: you can redistribute it and/or modify
@@ -19,8 +18,8 @@
 
 from dependency_injector import containers, providers
 from flask import current_app
-from .services import PluginService, ConversionService
-from .repositories import AltspellingRepository, ConversionRepository
+from .services import PluginService, TranslationService
+from .repositories import AltspellingRepository, TranslationRepository
 from .database import Database
 
 
@@ -30,7 +29,7 @@ class Container(containers.DeclarativeContainer):
     wiring_config = containers.WiringConfiguration(
         modules=[
             ".blueprints.plugin", 
-            ".blueprints.conversion",
+            ".blueprints.translation",
             ".utils.populate_altspelling_table"
         ]
     )
@@ -46,13 +45,13 @@ class Container(containers.DeclarativeContainer):
         session_factory=db.provided.session
     )
 
-    conversion_repository = providers.Singleton(
-        ConversionRepository,
+    translation_repository = providers.Singleton(
+        TranslationRepository,
         session_factory=db.provided.session
     )
 
-    conversion_service = providers.Factory(
-        ConversionService,
-        conversion_repository=conversion_repository,
+    translation_service = providers.Factory(
+        TranslationService,
+        translation_repository=translation_repository,
         altspelling_repository=altspelling_repository
     )

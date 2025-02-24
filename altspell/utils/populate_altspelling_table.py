@@ -1,6 +1,5 @@
 '''
-    Altspell  Flask web app for converting traditional English spelling to
-    an alternative spelling
+    Altspell  Flask web app for translating traditional English spelling to an alternative spelling
     Copyright (C) 2025  Nicholas Johnson
 
     This program is free software: you can redistribute it and/or modify
@@ -18,14 +17,14 @@
 '''
 
 from dependency_injector.wiring import inject, Provide
-from ..services import ConversionService
+from ..services import TranslationService
 from ..containers import Container
 
 
 @inject
 def populate_altspelling_table(
     altspelling: str,
-    conversion_service: ConversionService = Provide[Container.conversion_service]
+    translation_service: TranslationService = Provide[Container.translation_service]
 ):
     """Populate altspelling table with plugin"""
-    conversion_service.add_altspelling(altspelling)
+    translation_service.add_altspelling(altspelling)

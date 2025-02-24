@@ -1,6 +1,5 @@
 '''
-    Altspell  Flask web app for converting traditional English spelling to
-    an alternative spelling
+    Altspell  Flask web app for translating traditional English spelling to an alternative spelling
     Copyright (C) 2024-2025  Nicholas Johnson
 
     This program is free software: you can redistribute it and/or modify
@@ -22,21 +21,21 @@ from abc import ABC, abstractmethod
 
 class PluginBase(ABC):
     """
-    An interface for converter plugins. Plugin modules must name its concrete class 'Plugin'.
+    An interface for translation plugins. Plugin modules must name its concrete class 'Plugin'.
 
     Methods:
-        convert_to_altspell(tradspell_text: str) -> str:
-            Thread-safe method for converting from traditional English spelling to alternative
+        translate_to_altspell(tradspell_text: str) -> str:
+            Thread-safe method for translating from traditional English spelling to alternative
             English spelling.
-        convert_to_tradspell(altspell_text: str) -> str:
-            Thread-safe method for converting from alternative English spelling to traditional
+        translate_to_tradspell(altspell_text: str) -> str:
+            Thread-safe method for translating from alternative English spelling to traditional
             English spelling.
     """
 
     @abstractmethod
-    def convert_to_altspell(self, tradspell_text: str) -> str:
+    def translate_to_altspell(self, tradspell_text: str) -> str:
         """
-        Thread-safe method for converting from traditional English spelling to alternative
+        Thread-safe method for translating from traditional English spelling to alternative
         English spelling. All concrete subclasses must implement or raise a NotImplementedError.
 
         Args:
@@ -47,9 +46,9 @@ class PluginBase(ABC):
         """
 
     @abstractmethod
-    def convert_to_tradspell(self, altspell_text: str) -> str:
+    def translate_to_tradspell(self, altspell_text: str) -> str:
         """
-        Thread-safe method for converting from alternative English spelling to traditional
+        Thread-safe method for translating from alternative English spelling to traditional
         English spelling. All concrete subclasses must implement or a NotImplementedError.
 
         Args:

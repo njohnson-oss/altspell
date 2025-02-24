@@ -1,6 +1,5 @@
 '''
-    Altspell  Flask web app for converting traditional English spelling to
-    an alternative spelling
+    Altspell  Flask web app for translating traditional English spelling to an alternative spelling
     Copyright (C) 2025  Nicholas Johnson
 
     This program is free software: you can redistribute it and/or modify
@@ -27,9 +26,9 @@ class NotFoundError(Exception):
     def __init__(self, entity_id):
         super().__init__(f"{self.entity_name} not found, id: {entity_id}")
 
-class ConversionNotFoundError(NotFoundError):
-    """Exception for Conversions that cannot be found."""
-    entity_name: str = "Conversion"
+class TranslationNotFoundError(NotFoundError):
+    """Exception for Translations that cannot be found."""
+    entity_name: str = "Translation"
 
 class AltspellingNotFoundError(NotFoundError):
     """Exception for Altspellings that cannot be found."""
@@ -45,22 +44,22 @@ class InvalidTypeError(Exception):
     def __init__(self, key_name: str, cls: Type):
         super().__init__(f"Key '{key_name}' must be of type '{cls.__name__}'")
 
-class EmptyConversionError(Exception):
-    """Exception for empty text conversion strings."""
+class EmptyTranslationError(Exception):
+    """Exception for empty text translation strings."""
     def __init__(self):
-        super().__init__("Cannot save an empty conversion")
+        super().__init__("Cannot save an empty translation")
 
 class NotImplementedFwdError(NotImplementedError):
-    """Exception for attempted unimplemented tradspell -> altspell conversions."""
+    """Exception for attempted unimplemented tradspell -> altspell translations."""
     def __init__(self):
-        super().__init__("tradspell -> altspell conversion is not implemented for this plugin")
+        super().__init__("tradspell -> altspell translation is not implemented for this plugin")
 
 class NotImplementedBwdError(NotImplementedError):
-    """Exception for attempted unimplemented altspell -> tradspell conversions."""
+    """Exception for attempted unimplemented altspell -> tradspell translations."""
     def __init__(self):
-        super().__init__("altspell -> tradspell conversion is not implemented for this plugin")
+        super().__init__("altspell -> tradspell translation is not implemented for this plugin")
 
 class PluginUnavailableError(Exception):
-    """Exception for attempted conversions with unavailable plugins."""
+    """Exception for attempted translations with unavailable plugins."""
     def __init__(self, plugin: str):
         super().__init__(f"Plugin '{plugin}' is unavailable")

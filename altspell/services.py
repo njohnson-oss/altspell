@@ -1,6 +1,5 @@
 '''
-    Altspell  Flask web app for converting traditional English spelling to
-    an alternative spelling
+    Altspell  Flask web app for translating traditional English spelling to an alternative spelling
     Copyright (C) 2025  Nicholas Johnson
 
     This program is free software: you can redistribute it and/or modify
@@ -21,10 +20,10 @@ import uuid
 from typing import List
 from flask import current_app
 from sqlalchemy.exc import IntegrityError
-from .repositories import ConversionRepository, AltspellingRepository
-from .model import Altspelling, Conversion
+from .repositories import TranslationRepository, AltspellingRepository
+from .model import Altspelling, Translation
 from .exceptions import (
-    MissingKeyError, InvalidTypeError, EmptyConversionError, PluginUnavailableError
+    MissingKeyError, InvalidTypeError, EmptyTranslationError, PluginUnavailableError
 )
 
 
@@ -39,28 +38,28 @@ class PluginService:
         """
         return list(current_app.plugin_instances.keys())
 
-class ConversionService:
-    """A service providing functionality for conversion endpoints."""
+class TranslationService:
+    """A service providing functionality for translation endpoints."""
 
     def __init__(
         self,
-        conversion_repository: ConversionRepository,
+        translation_repository: TranslationRepository,
         altspelling_repository: AltspellingRepository
     ):
-        self._conversion_repository: ConversionRepository = conversion_repository
+        self._translation_repository: TranslationRepository = translation_repository
         self._altspelling_repository: AltspellingRepository = altspelling_repository
 
-    def get_conversion_by_id(self, conversion_id: uuid) -> Conversion:
+    def get_translation_by_id(self, translation_id: uuid) -> Translation:
         """
-        Retrieve a Conversion by id, from the database.
+        Retrieve a Translation by id, from the database.
 
         Args:
-            conversion_id (uuid): Id of the Conversion to query.
+            translation_id (uuid): Id of the Translation to query.
 
         Returns:
-            Conversion: A Conversion object representing the queried database record.
+            Translation: A Translation object representing the queried database record.
         """
-        return self._conversion_repository.get_by_id(conversion_id)
+        return self._translation_repository.get_by_id(translation_id)
 
     def add_altspelling(self, altspelling: str) -> Altspelling:
         """
@@ -77,24 +76,24 @@ class ConversionService:
         except IntegrityError:
             return self._altspelling_repository.get_by_name(altspelling)
 
-    def convert(
+    def translate(
         self,
         altspelling: str,
         to_altspell: bool,
         tradspell_text: str,
         altspell_text: str,
         save: bool
-    ) -> Conversion:
+    ) -> Translation:
         """
-        Perform a conversion, optionallys saving it to the database.
+        Perform a translation, optionallys saving it to the database.
 
         Args:
-            altspelling (str): Name of the Altspelling plugin to use for conversion.
-            to_altspell (bool): If true, convert tradspell -> altspell. Otherwise convert \
+            altspelling (str): Name of the Altspelling plugin to use for translation.
+            to_altspell (bool): If true, translate tradspell -> altspell. Otherwise translate \
                 altspell -> tradspell.
-            tradspell_text (str): Tradspell text to convert to altspell text.
-            altspell_text (str): Altspell text to convert to tradspell text.
-            save (bool): If true, persist the conversion to the database.
+            tradspell_text (str): Tradspell text to translate to altspell text.
+            altspell_text (str): Altspell text to translate to tradspell text.
+            save (bool): If true, persist the translation to the database.
 
         Returns:
             Altspelling: An Altspelling object representing the added database record.
@@ -131,9 +130,9 @@ class ConversionService:
                 raise InvalidTypeError("altspell_text", str)
 
         if to_altspell is True and tradspell_text == '':
-            raise EmptyConversionError
+            raise EmptyTranslationError
         if to_altspell is False and altspell_text == '':
-            raise EmptyConversionError
+            raise EmptyTranslationError
 
         selected_plugin = current_app.plugin_instances.get(altspelling)
 
@@ -143,38 +142,38 @@ class ConversionService:
         # raises AltspellingNotFoundError if not found
         altspelling = self._altspelling_repository.get_by_name(altspelling)
 
-        # get conversion functions
-        convert_to_altspell = selected_plugin.convert_to_altspell
-        convert_to_tradspell = selected_plugin.convert_to_tradspell
+        # get translation functions
+        translate_to_altspell = selected_plugin.translate_to_altspell
+        translate_to_tradspell = selected_plugin.translate_to_tradspell
 
-        conv_len_limit = current_app.config['CONVERSION_LENGTH_LIMIT']
+        translation_length_limit = current_app.config['TRANSLATION_LENGTH_LIMIT']
 
         if to_altspell:
-            tradspell_text = tradspell_text[:conv_len_limit]
+            tradspell_text = tradspell_text[:translation_length_limit]
 
             # raises NotImplementedFwdError if unimplemented
-            altspell_text = convert_to_altspell(tradspell_text)
+            altspell_text = translate_to_altspell(tradspell_text)
         else:
-            altspell_text = altspell_text[:conv_len_limit]
+            altspell_text = altspell_text[:translation_length_limit]
 
             # raises NotImplementedBwdError if unimplemented
-            tradspell_text = convert_to_tradspell(altspell_text)
+            tradspell_text = translate_to_tradspell(altspell_text)
 
-        conversion = Conversion(
+        translation = Translation(
             to_altspell=to_altspell,
             tradspell_text=tradspell_text,
             altspell_text=altspell_text,
             altspelling_id=altspelling.id
         )
 
-        conversion.altspelling = altspelling
+        translation.altspelling = altspelling
 
         if save:
-            conversion = self._conversion_repository.add(
+            translation = self._translation_repository.add(
                 to_altspell=to_altspell,
                 tradspell_text=tradspell_text,
                 altspell_text=altspell_text,
                 altspelling_id=altspelling.id,
             )
 
-        return conversion
+        return translation

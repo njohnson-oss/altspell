@@ -1,6 +1,5 @@
 '''
-    Altspell  Flask web app for converting traditional English spelling to
-    an alternative spelling
+    Altspell  Flask web app for translating traditional English spelling to an alternative spelling
     Copyright (C) 2025  Nicholas Johnson
 
     This program is free software: you can redistribute it and/or modify
@@ -21,12 +20,12 @@ from contextlib import AbstractAsyncContextManager
 from typing import Callable
 import uuid
 from sqlalchemy.orm import Session, selectinload
-from .model import Altspelling, Conversion
-from .exceptions import ConversionNotFoundError, AltspellingNotFoundError
+from .model import Altspelling, Translation
+from .exceptions import TranslationNotFoundError, AltspellingNotFoundError
 
 
-class ConversionRepository:
-    """Repository for database operations related to conversions."""
+class TranslationRepository:
+    """Repository for database operations related to translations."""
     def __init__(
         self,
         session_factory: Callable[
@@ -42,58 +41,58 @@ class ConversionRepository:
         tradspell_text: str,
         altspell_text: str,
         altspelling_id: int
-    ) -> Conversion:
+    ) -> Translation:
         """
-        Add a conversion to the database.
+        Add a translation to the database.
 
         Args:
-            to_altspell (bool): True if converted to the alternative spelling system. False if \
-                converted to traditional English spelling.
+            to_altspell (bool): True if translated to the alternative spelling system. False if \
+                translated to traditional English spelling.
             tradspell_text (str): Text in traditional English spelling.
             altspell_text (str): Text in the alternative English spelling system.
             altspelling_id (int): Id of the alternative spelling system.
 
         Returns:
-            Conversion: The conversion object added to the database.
+            Translation: The translation object added to the database.
         """
         with self.session_factory() as session:
-            conversion = Conversion(
+            translation = Translation(
                 id=uuid.uuid4(),
                 to_altspell=to_altspell,
                 tradspell_text=tradspell_text,
                 altspell_text=altspell_text,
                 altspelling_id=altspelling_id
             )
-            session.add(conversion)
+            session.add(translation)
             session.commit()
-            conversion_with_altspelling = (
-                session.query(Conversion)
-                .options(selectinload(Conversion.altspelling))
-                .filter(Conversion.id == conversion.id)
+            translation_with_altspelling = (
+                session.query(Translation)
+                .options(selectinload(Translation.altspelling))
+                .filter(Translation.id == translation.id)
                 .first()
             )
-            return conversion_with_altspelling
+            return translation_with_altspelling
 
-    def get_by_id(self, conversion_id: uuid) -> Conversion:
+    def get_by_id(self, translation_id: uuid) -> Translation:
         """
-        Retrieve a conversion by id.
+        Retrieve a translation by id.
 
         Args:
-            conversion_id (uuid): Id of the requested conversion.
+            translation_id (uuid): Id of the requested translation.
 
         Returns:
-            Conversion: The conversion object corresponding to conversion_id.
+            Translation: The translation object corresponding to translation_id.
         """
         with self.session_factory() as session:
-            conversion = (
-                session.query(Conversion)
-                .options(selectinload(Conversion.altspelling))
-                .filter(Conversion.id == conversion_id)
+            translation = (
+                session.query(Translation)
+                .options(selectinload(Translation.altspelling))
+                .filter(Translation.id == translation_id)
                 .first()
             )
-            if not conversion:
-                raise ConversionNotFoundError(conversion_id)
-            return conversion
+            if not translation:
+                raise TranslationNotFoundError(translation_id)
+            return translation
 
 class AltspellingRepository:
     """Repository for database operations related to alternative spelling systems."""
