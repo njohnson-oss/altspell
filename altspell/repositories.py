@@ -38,9 +38,9 @@ class TranslationRepository:
 
     def add(
         self,
-        to_altspell: bool,
-        tradspell_text: str,
-        altspell_text: str,
+        forward: bool,
+        traditional_text: str,
+        respelled_text: str,
         spelling_system_id: int
     ) -> Translation:
         """
@@ -59,9 +59,9 @@ class TranslationRepository:
         with self.session_factory() as session:
             translation = Translation(
                 id=uuid.uuid4(),
-                to_altspell=to_altspell,
-                tradspell_text=tradspell_text,
-                altspell_text=altspell_text,
+                forward=forward,
+                traditional_text=traditional_text,
+                respelled_text=respelled_text,
                 spelling_system_id=spelling_system_id
             )
             session.add(translation)
