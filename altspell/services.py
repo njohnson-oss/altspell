@@ -37,7 +37,7 @@ class SpellingSystemService:
         Returns:
             A List of active spelling systems.
         """
-        return list(current_app.spelling_system_instances.keys())
+        return list(current_app.plugin_instances.keys())
 
 class TranslationService:
     """A service providing functionality for translation endpoints."""
@@ -117,7 +117,7 @@ class TranslationService:
         if text == '':
             raise EmptyTranslationError
 
-        selected_spelling_system = current_app.spelling_system_instances.get(spelling_system)
+        selected_spelling_system = current_app.plugin_instances.get(spelling_system)
 
         if selected_spelling_system is None:
             raise SpellingSystemUnavailableError(spelling_system)
