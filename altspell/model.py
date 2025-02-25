@@ -90,11 +90,11 @@ class Translation(Base):
             'traditional English spelling => alternative English spelling or alternative ' \
             'English spelling => traditional English spelling.'
     )
-    tradspell_text: Mapped[str] = mapped_column(
+    traditional_text: Mapped[str] = mapped_column(
         String,
         doc='Text in traditional English spelling.'
     )
-    altspell_text: Mapped[str] = mapped_column(
+    respelled_text: Mapped[str] = mapped_column(
         String,
         doc='Text in alternative English spelling.'
     )
