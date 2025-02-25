@@ -3,7 +3,7 @@ name = "altspell"
 version = "0.1.0"
 description = "A flask web API for translating between traditional English spellings and alternative spellings"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.8,<4"
 authors = [
   { name="Nicholas Johnson", email="njohnson@posteo.net" },
 ]
@@ -16,16 +16,16 @@ classifiers = [
   "Operating System :: OS Independent",
 ]
 dependencies = [
-    "dependency_injector",
-    "flask",
-    "flask_sqlalchemy",
-    "flask_cors",
-    "psycopg2",
-    "pytz"
+    "dependency_injector==4.45.0",
+    "flask==3.1.0",
+    "flask_sqlalchemy==3.1.1",
+    "flask_cors==5.0.0",
+    "psycopg2==2.9.10",
+    "pytz==2025.1"
 ]
 
 [build-system]
-requires = ["flit_core<4"]
+requires = ["flit_core>=3.11,<4"]
 build-backend = "flit_core.buildapi"
 
 [tool.flit.module]
