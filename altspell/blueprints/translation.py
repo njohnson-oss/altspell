@@ -25,12 +25,12 @@ from ..utils.hcaptcha import require_hcaptcha
 from ..containers import Container
 from ..services import TranslationService
 from ..exceptions import (
-    NotFoundError,
     MissingKeyError,
     InvalidTypeError,
     EmptyTranslationError,
     SpellingSystemUnavailableError,
-    SpellingSystemNotFoundError
+    SpellingSystemNotFoundError,
+    TranslationNotFoundError
 )
 
 
@@ -177,8 +177,8 @@ def get_translation(
     """
     try:
         translation = translation_service.get_translation_by_id(translation_id)
-    except NotFoundError:
-        return {'error': 'Translation not found'}, 404
+    except TranslationNotFoundError as e:
+        return {'error': str(e)}, 404
 
     resp = {
         'id': translation.id,
