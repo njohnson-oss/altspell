@@ -73,7 +73,7 @@ def translate(
         POST /api/translations
         Request Body: {
             "altspelling": "lytspel",
-            "to_altspell': True,
+            "to_altspell": True,
             "text": "Hello world!",
             "save": True
         }
