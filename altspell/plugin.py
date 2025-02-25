@@ -1,5 +1,6 @@
 '''
-    Altspell  Flask web app for translating traditional English spelling to an alternative spelling
+    Altspell  Flask web app for translating traditional English to respelled
+    English and vice versa
     Copyright (C) 2024-2025  Nicholas Johnson
 
     This program is free software: you can redistribute it and/or modify
@@ -21,38 +22,38 @@ from abc import ABC, abstractmethod
 
 class PluginBase(ABC):
     """
-    An interface for translation plugins. Plugin modules must name its concrete class 'Plugin'.
+    An interface for spelling system plugins. Concrete subclasses must be named 'Plugin'.
 
     Methods:
-        translate_to_altspell(tradspell_text: str) -> str:
+        translate_to_respelling(traditional_text: str) -> str:
             Thread-safe method for translating from traditional English spelling to alternative
             English spelling.
-        translate_to_tradspell(altspell_text: str) -> str:
+        translate_to_traditional_spelling(respelled_text: str) -> str:
             Thread-safe method for translating from alternative English spelling to traditional
             English spelling.
     """
 
     @abstractmethod
-    def translate_to_altspell(self, tradspell_text: str) -> str:
+    def translate_to_respelling(self, traditional_text: str) -> str:
         """
         Thread-safe method for translating from traditional English spelling to alternative
         English spelling. All concrete subclasses must implement or raise a NotImplementedError.
 
         Args:
-            tradspell_text (str): Text written in the traditional English spelling.
+            traditional_text (str): Text written in the traditional English spelling.
 
         Returns:
             str: Text written in the alternative English spelling.
         """
 
     @abstractmethod
-    def translate_to_tradspell(self, altspell_text: str) -> str:
+    def translate_to_traditional_spelling(self, respelled_text: str) -> str:
         """
         Thread-safe method for translating from alternative English spelling to traditional
         English spelling. All concrete subclasses must implement or a NotImplementedError.
 
         Args:
-            altspell_text (str): Text written in the alternative English spelling.
+            respelled_text (str): Text written in the alternative English spelling.
 
         Returns:
             str: Text written in the traditional English spelling.

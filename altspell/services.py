@@ -1,5 +1,6 @@
 '''
-    Altspell  Flask web app for translating traditional English spelling to an alternative spelling
+    Altspell  Flask web app for translating traditional English to respelled
+    English and vice versa
     Copyright (C) 2025  Nicholas Johnson
 
     This program is free software: you can redistribute it and/or modify
@@ -17,26 +18,26 @@
 '''
 
 import uuid
-from typing import List
+from typing import List, Type
 from flask import current_app
 from sqlalchemy.exc import IntegrityError
-from .repositories import TranslationRepository, AltspellingRepository
-from .model import Altspelling, Translation
+from .repositories import TranslationRepository, SpellingSystemRepository
+from .model import SpellingSystem, Translation
 from .exceptions import (
-    MissingKeyError, InvalidTypeError, EmptyTranslationError, PluginUnavailableError
+    MissingKeyError, InvalidTypeError, EmptyTranslationError, SpellingSystemUnavailableError
 )
 
 
-class PluginService:
-    """A service providing functionality for plugin endpoints."""
+class SpellingSystemService:
+    """A service providing functionality for spelling system endpoints."""
 
     @staticmethod
-    def get_plugins() -> List[str]:
+    def get_spelling_systems() -> List[str]:
         """
         Returns:
-            A List of active plugins.
+            A List of active spelling systems.
         """
-        return list(current_app.plugin_instances.keys())
+        return list(current_app.spelling_system_instances.keys())
 
 class TranslationService:
     """A service providing functionality for translation endpoints."""
@@ -44,10 +45,10 @@ class TranslationService:
     def __init__(
         self,
         translation_repository: TranslationRepository,
-        altspelling_repository: AltspellingRepository
+        spelling_system_repository: SpellingSystemRepository
     ):
         self._translation_repository: TranslationRepository = translation_repository
-        self._altspelling_repository: AltspellingRepository = altspelling_repository
+        self._spelling_system_repository: SpellingSystemRepository = spelling_system_repository
 
     def get_translation_by_id(self, translation_id: uuid) -> Translation:
         """
@@ -61,25 +62,25 @@ class TranslationService:
         """
         return self._translation_repository.get_by_id(translation_id)
 
-    def add_altspelling(self, altspelling: str) -> Altspelling:
+    def add_spelling_system(self, spelling_system: str) -> SpellingSystem:
         """
-        Add an Altspelling to the database.
+        Add a spelling system to the database.
 
         Args:
-            altspelling (str): Name of the Altspelling to add.
+            spelling_system (str): Name of the spelling system to add.
 
         Returns:
-            Altspelling: An Altspelling object representing the added database record.
+            SpellingSystem: A SpellingSystem object representing the added database record.
         """
         try:
-            return self._altspelling_repository.add(altspelling)
+            return self._spelling_system_repository.add(spelling_system)
         except IntegrityError:
-            return self._altspelling_repository.get_by_name(altspelling)
+            return self._spelling_system_repository.get_by_name(spelling_system)
 
     def translate(
         self,
-        altspelling: str,
-        to_altspell: bool,
+        spelling_system: str,
+        forward: bool,
         text: str,
         save: bool
     ) -> Translation:
@@ -87,83 +88,78 @@ class TranslationService:
         Perform a translation, optionally saving it to the database.
 
         Args:
-            altspelling (str): Name of the Altspelling plugin to use for translation.
-            to_altspell (bool): If true, translate tradspell -> altspell. Otherwise translate \
-                altspell -> tradspell.
+            spelling_system (str): Name of the spelling system to use for translation.
+            forward (bool): True for translation to the alternative spelling system. False for \
+                translation to traditional English spelling.
             text (str): Text to be translated.
             save (bool): If true, persist the translation to the database.
 
         Returns:
-            Altspelling: An Altspelling object representing the added database record.
+            Translation: A Translation object representing the added database record.
         """
 
         # assign default save value
         if save is None:
             save = False
 
+        def validate_key(key, key_pascal_case: str, cls: Type):
+            if key is None:
+                raise MissingKeyError(key_pascal_case)
+
+            if not isinstance(key, cls):
+                raise InvalidTypeError(key_pascal_case, cls)
+
         # exception handling
-        if altspelling is None:
-            raise MissingKeyError("altspelling")
-
-        if not isinstance(altspelling, str):
-            raise InvalidTypeError("altspelling", str)
-
-        if to_altspell is None:
-            raise MissingKeyError("to_altspell")
-        if not isinstance(to_altspell, bool):
-            raise InvalidTypeError("to_altspell", bool)
-
-        if text is None:
-            raise MissingKeyError("text")
-
-        if not isinstance(text, str):
-            raise InvalidTypeError("text", str)
+        validate_key(spelling_system, "spellingSystem", str)
+        validate_key(forward, "forward", bool)
+        validate_key(text, "text", str)
 
         if text == '':
             raise EmptyTranslationError
 
-        selected_plugin = current_app.plugin_instances.get(altspelling)
+        selected_spelling_system = current_app.spelling_system_instances.get(spelling_system)
 
-        if selected_plugin is None:
-            raise PluginUnavailableError(altspelling)
+        if selected_spelling_system is None:
+            raise SpellingSystemUnavailableError(spelling_system)
 
-        # raises AltspellingNotFoundError if not found
-        altspelling = self._altspelling_repository.get_by_name(altspelling)
+        # raises SpellingSystemNotFoundError if not found
+        spelling_system = self._spelling_system_repository.get_by_name(spelling_system)
 
         # get translation functions
-        translate_to_altspell = selected_plugin.translate_to_altspell
-        translate_to_tradspell = selected_plugin.translate_to_tradspell
+        translate_to_respelling = selected_spelling_system.translate_to_respelling
+        translate_to_traditional_spelling = \
+            selected_spelling_system.translate_to_traditional_spelling
 
         translation_length_limit = current_app.config['TRANSLATION_LENGTH_LIMIT']
 
         text = text[:translation_length_limit]
 
-        if to_altspell:
-            tradspell_text = text
+        if forward:
+            traditional_text = text
 
             # raises NotImplementedFwdError if unimplemented
-            altspell_text = translate_to_altspell(text)
+            respelled_text = translate_to_respelling(text)
         else:
             # raises NotImplementedBwdError if unimplemented
-            tradspell_text = translate_to_tradspell(text)
+            traditional_text = translate_to_traditional_spelling(text)
 
-            altspell_text = text
+            respelled_text = text
 
         translation = Translation(
-            to_altspell=to_altspell,
-            tradspell_text=tradspell_text,
-            altspell_text=altspell_text,
-            altspelling_id=altspelling.id
+            forward=forward,
+            traditional_text=traditional_text,
+            respelled_text=respelled_text,
+            spelling_system_id=spelling_system.id
         )
 
-        translation.altspelling = altspelling
+        translation.spelling_system = spelling_system
 
         if save:
             translation = self._translation_repository.add(
-                to_altspell=to_altspell,
-                tradspell_text=tradspell_text,
-                altspell_text=altspell_text,
-                altspelling_id=altspelling.id,
+                forward=forward,
+                traditional_text=traditional_text,
+                respelled_text=respelled_text,
+                spelling_system_id=spelling_system.id,
             )
 
         return translation

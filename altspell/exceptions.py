@@ -1,5 +1,6 @@
 '''
-    Altspell  Flask web app for translating traditional English spelling to an alternative spelling
+    Altspell  Flask web app for translating traditional English to respelled
+    English and vice versa
     Copyright (C) 2025  Nicholas Johnson
 
     This program is free software: you can redistribute it and/or modify
@@ -30,9 +31,9 @@ class TranslationNotFoundError(NotFoundError):
     """Exception for Translations that cannot be found."""
     entity_name: str = "Translation"
 
-class AltspellingNotFoundError(NotFoundError):
-    """Exception for Altspellings that cannot be found."""
-    entity_name: str = "Altspelling"
+class SpellingSystemNotFoundError(NotFoundError):
+    """Exception for spelling systems that cannot be found."""
+    entity_name: str = "Spelling system"
 
 class MissingKeyError(Exception):
     """Exception for missing required JSON request body keys."""
@@ -45,21 +46,21 @@ class InvalidTypeError(Exception):
         super().__init__(f"Key '{key_name}' must be of type '{cls.__name__}'")
 
 class EmptyTranslationError(Exception):
-    """Exception for empty text translation strings."""
+    """Exception for empty translation text."""
     def __init__(self):
         super().__init__("Cannot save an empty translation")
 
-class NotImplementedFwdError(NotImplementedError):
-    """Exception for attempted unimplemented tradspell -> altspell translations."""
+class FwdTranslationNotImplementedError(NotImplementedError):
+    """Exception for attempted unimplemented forward translations."""
     def __init__(self):
-        super().__init__("tradspell -> altspell translation is not implemented for this plugin")
+        super().__init__("Forward translation is not implemented for this spelling system")
 
-class NotImplementedBwdError(NotImplementedError):
-    """Exception for attempted unimplemented altspell -> tradspell translations."""
+class BwdTranslationNotImplementedError(NotImplementedError):
+    """Exception for attempted unimplemented backward translations."""
     def __init__(self):
-        super().__init__("altspell -> tradspell translation is not implemented for this plugin")
+        super().__init__("Backward translation is not implemented for this spelling system")
 
-class PluginUnavailableError(Exception):
-    """Exception for attempted translations with unavailable plugins."""
-    def __init__(self, plugin: str):
-        super().__init__(f"Plugin '{plugin}' is unavailable")
+class SpellingSystemUnavailableError(Exception):
+    """Exception for attempted translations with unavailable spelling systems."""
+    def __init__(self, spelling_system: str):
+        super().__init__(f"Spelling system '{spelling_system}' is unavailable")

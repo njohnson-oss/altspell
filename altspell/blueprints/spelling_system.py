@@ -1,5 +1,6 @@
 '''
-    Altspell  Flask web app for translating traditional English spelling to an alternative spelling
+    Altspell  Flask web app for translating traditional English to respelled
+    English and vice versa
     Copyright (C) 2024  Nicholas Johnson
 
     This program is free software: you can redistribute it and/or modify
@@ -18,38 +19,40 @@
 
 from flask import Blueprint, jsonify
 from dependency_injector.wiring import Provide, inject
-from ..services import PluginService
+from ..services import SpellingSystemService
 from ..containers import Container
 
 
-bp = Blueprint("plugins", __name__, url_prefix='/api')
+bp = Blueprint("spelling_systems", __name__, url_prefix='/api')
 
-@bp.route('/plugins', methods=['GET'])
+@bp.route('/spelling-systems', methods=['GET'])
 @inject
-def get_plugins(plugin_service: PluginService = Provide[Container.plugin_service]):
+def get_spelling_systems(spelling_system_service: SpellingSystemService = \
+    Provide[Container.spelling_system_service]):
     """
-    Endpoint that returns a list of enabled plugins.
+    Endpoint that returns a list of enabled spelling systems.
 
-    This endpoint accepts a GET request and returns a list of enabled plugins in the JSON Response.
+    This endpoint accepts a GET request and returns a list of enabled spelling systems in the \
+        JSON Response.
 
     Returns:
-        Response: A JSON Response object containing a list of enabled plugins.
+        Response: A JSON Response object containing a list of enabled spelling systems.
 
     Example:
 
         Request:
-        GET /api/plugins
+        GET /api/spelling-systems
 
         Response:
-        GET /api/plugins
+        GET /api/spelling-systems
         Response Body: [
             "lytspel",
             "soundspel"
         ]
 
     HTTP Status Codes:
-    - 200 OK: List of plugins is returned.
+    - 200 OK: List of spelling systems is returned.
     """
-    plugins = plugin_service.get_plugins()
+    spelling_systems = spelling_system_service.get_spelling_systems()
 
-    return jsonify(plugins)
+    return jsonify(spelling_systems)

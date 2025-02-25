@@ -1,5 +1,6 @@
 '''
-    Altspell  Flask web app for translating traditional English spelling to an alternative spelling
+    Altspell  Flask web app for translating traditional English to respelled
+    English and vice versa
     Copyright (C) 2024-2025  Nicholas Johnson
 
     This program is free software: you can redistribute it and/or modify
@@ -28,8 +29,8 @@ from ..exceptions import (
     MissingKeyError,
     InvalidTypeError,
     EmptyTranslationError,
-    PluginUnavailableError,
-    AltspellingNotFoundError
+    SpellingSystemUnavailableError,
+    SpellingSystemNotFoundError
 )
 
 
@@ -50,8 +51,8 @@ def translate(
     database.
 
     JSON Request Parameters:
-    - altspelling (str): Name of translation Plugin.
-    - to_altspell (bool): Indicates the direction of translation.
+    - spellingSystem (str): Name of spelling system used for the translation.
+    - forward (bool): Indicates the direction of translation.
     - text (str): Text to be translated.
     - save (bool): Indicates whether save the resulting translation.
 
@@ -59,10 +60,10 @@ def translate(
     - id (uuid): ID of the translation. (only if 'save' was True in the request)
     - creation_date (DateTime): Date and time translation was inserted into the database. (only if
                                 'save' was True in the request)
-    - altspelling (str): Name of translation Plugin.
-    - to_altspell (bool): Indicates the direction of translation.
-    - tradspell_text (str): Text in traditional English spelling (necessary if to_altspell is True).
-    - altspell_text (str): Text in alternative English spelling (necessary if to_altspell is False).
+    - spellingSystem (str): Name of spelling system used for the translation.
+    - forward (bool): Indicates the direction of translation.
+    - traditional_text (str): Text in traditional English spelling.
+    - respelled_text (str): Text in alternative English spelling.
 
     Returns:
         Response: A JSON Response object containing the translated English text.
@@ -72,8 +73,8 @@ def translate(
         Request:
         POST /api/translations
         Request Body: {
-            "altspelling": "lytspel",
-            "to_altspell": True,
+            "spellingSystem": "lytspel",
+            "forward": True,
             "text": "Hello world!",
             "save": True
         }
@@ -83,27 +84,27 @@ def translate(
         Response Body: {
             "id": "7d9be066-6a0b-4459-9242-86dce2df6775",
             "creation_date": "2020-10-21T05:39:20+00:00",
-            "altspelling": "lytspel",
-            "to_altspell": True,
-            "tradspell_text": "Hello world!",
-            "altspell_text": "Heló wurld!"
+            "spellingSystem": "lytspel",
+            "forward": True,
+            "traditional_text": "Hello world!",
+            "respelled_text": "Heló wurld!"
         }
 
     HTTP Status Codes:
     - 200 OK: Translated English text is returned.
-    - 400 Bad Request: JSON request is malformed or requested plugin method is unavailable.
+    - 400 Bad Request: JSON request is malformed or requested spelling system is unavailable.
     """
     data = request.json
 
     save = data.get('save')
-    altspelling = data.get('altspelling')
-    to_altspell = data.get('to_altspell')
+    spelling_system = data.get('spellingSystem')
+    forward = data.get('forward')
     text = data.get('text')
 
     try:
         translation = translation_service.translate(
-            altspelling,
-            to_altspell,
+            spelling_system,
+            forward,
             text,
             save
         )
@@ -112,21 +113,21 @@ def translate(
         InvalidTypeError,
         EmptyTranslationError,
         NotImplementedError,
-        PluginUnavailableError,
-        AltspellingNotFoundError
+        SpellingSystemUnavailableError,
+        SpellingSystemNotFoundError
     ) as e:
         return {'error': str(e)}, 400
 
     resp = {
-        'altspelling': translation.altspelling.name,
-        'to_altspell': translation.to_altspell,
-        'tradspell_text': translation.tradspell_text,
-        'altspell_text': translation.altspell_text
+        'spellingSystem': translation.spelling_system.name,
+        'forward': translation.forward,
+        'traditionalText': translation.traditional_text,
+        'respelledText': translation.respelled_text
     }
 
     if save:
         resp['id'] = translation.id
-        resp['creation_date'] = pytz.utc.localize(translation.creation_date).isoformat()
+        resp['creationDate'] = pytz.utc.localize(translation.creation_date).isoformat()
 
     return resp
 
@@ -143,11 +144,12 @@ def get_translation(
 
     JSON Response Parameters:
     - id (uuid): ID of the translation.
-    - creation_date (DateTime): Date and time translation was inserted into the database.
-    - altspelling (str): Name of translation Plugin.
-    - to_altspell (bool): Indicates the direction of translation.
-    - tradspell_text (str): Text in traditional English spelling (necessary if to_altspell is True).
-    - altspell_text (str): Text in alternative English spelling (necessary if to_altspell is False).
+    - creationDate (DateTime): Date and time translation was inserted into the database.
+    - spellingSystem (str): Name of spelling system used for the translation.
+    - forward (bool): If true, traditional_text -> respelled_text. If false, respelledText -> \
+        traditionalText.
+    - traditionalText (str): Text in traditional English spelling (necessary if forward is True).
+    - respelledText (str): Text in alternative English spelling (necessary if is_forward is False).
 
     Returns:
         Response: A JSON Response object containing the translated English text.
@@ -161,11 +163,11 @@ def get_translation(
         GET /api/translations
         Response Body: {
             "id": "7d9be066-6a0b-4459-9242-86dce2df6775",
-            "creation_date": "2020-10-21T05:39:20+0000",
-            "altspelling": "lytspel",
-            "to_altspell": True,
-            "tradspell_text": "Hello world!",
-            "altspell_text": "Heló wurld!"
+            "creationDate": "2020-10-21T05:39:20-0700",
+            "spellingSystem": "lytspel",
+            "forward": True,
+            "traditionalText": "Hello world!",
+            "respelledText": "Heló wurld!"
         }
 
     HTTP Status Codes:
@@ -180,11 +182,11 @@ def get_translation(
 
     resp = {
         'id': translation.id,
-        'creation_date': pytz.utc.localize(translation.creation_date).isoformat(),
-        'altspelling': translation.altspelling.name,
-        'to_altspell': translation.to_altspell,
-        'tradspell_text': translation.tradspell_text,
-        'altspell_text': translation.altspell_text
+        'creationDate': pytz.utc.localize(translation.creation_date).isoformat(),
+        'spellingSystem': translation.respelling.name,
+        'forward': translation.forward,
+        'traditionalText': translation.traditional_text,
+        'respelledText': translation.respelled_text
     }
 
     return resp

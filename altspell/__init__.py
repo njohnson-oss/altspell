@@ -1,5 +1,6 @@
 '''
-    Altspell  Flask web app for translating traditional English spelling to an alternative spelling
+    Altspell  Flask web app for translating traditional English to respelled
+    English and vice versa
     Copyright (C) 2024-2025  Nicholas Johnson
 
     This program is free software: you can redistribute it and/or modify
@@ -93,8 +94,8 @@ def create_app(test_config=None):
                 continue
 
             with app.app_context():
-                from .utils.populate_altspelling_table import populate_altspelling_table  # pylint: disable=import-outside-toplevel
-                populate_altspelling_table(plugin)
+                from .utils.populate_spelling_system_table import populate_spelling_system_table  # pylint: disable=import-outside-toplevel
+                populate_spelling_system_table(plugin)
 
             # initialize plugin
             app.logger.info('Initializing plugin: %s...', plugin)
@@ -107,7 +108,7 @@ def create_app(test_config=None):
     from .blueprints import translation  # pylint: disable=import-outside-toplevel
     app.register_blueprint(translation.bp)
 
-    from .blueprints import plugin  # pylint: disable=import-outside-toplevel
-    app.register_blueprint(plugin.bp)
+    from .blueprints import spelling_system  # pylint: disable=import-outside-toplevel
+    app.register_blueprint(spelling_system.bp)
 
     return app

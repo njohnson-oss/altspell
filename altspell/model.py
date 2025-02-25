@@ -1,5 +1,6 @@
 '''
-    Altspell  Flask web app for translating traditional English spelling to an alternative spelling
+    Altspell  Flask web app for translating traditional English to respelled
+    English and vice versa
     Copyright (C) 2024  Nicholas Johnson
 
     This program is free software: you can redistribute it and/or modify
@@ -49,9 +50,9 @@ def sqlite_utcnow(_element, _compiler, **_kw):
     timestamp."""
     return "(STRFTIME('%Y-%m-%d %H:%M:%S', 'NOW'))"
 
-class Altspelling(Base):
+class SpellingSystem(Base):
     """A table containing the enabled alternate spellings of English."""
-    __tablename__ = "altspelling"
+    __tablename__ = "spelling_system"
 
     id: Mapped[int] = mapped_column(
         Integer,
@@ -65,7 +66,7 @@ class Altspelling(Base):
     )
 
     translations: Mapped[List["Translation"]] = relationship(
-        back_populates="altspelling",
+        back_populates="spelling_system",
         doc='All translations that use the alternative spelling of English.'
     )
 
@@ -83,7 +84,7 @@ class Translation(Base):
         server_default=UTCnow(),
         doc='DateTime representing when the translation was inserted into the database.'
     )
-    to_altspell: Mapped[bool] = mapped_column(
+    forward: Mapped[bool] = mapped_column(
         Boolean,
         doc='Boolean representing which direction the translation occurred in. I.e: Either ' \
             'traditional English spelling => alternative English spelling or alternative ' \
@@ -97,12 +98,12 @@ class Translation(Base):
         String,
         doc='Text in alternative English spelling.'
     )
-    altspelling_id: Mapped[int] = mapped_column(
-        ForeignKey('altspelling.id'),
+    spelling_system_id: Mapped[int] = mapped_column(
+        ForeignKey('spelling_system.id'),
         doc='Sequence number representing alternative spelling of English.'
     )
 
-    altspelling: Mapped["Altspelling"] = relationship(
+    spelling_system: Mapped["SpellingSystem"] = relationship(
         back_populates="translations",
         doc='The alternative spelling of English that was used by the translation.'
     )

@@ -1,5 +1,6 @@
 '''
-    Altspell  Flask web app for translating traditional English spelling to an alternative spelling
+    Altspell  Flask web app for translating traditional English to respelled
+    English and vice versa
     Copyright (C) 2025  Nicholas Johnson
 
     This program is free software: you can redistribute it and/or modify
@@ -20,8 +21,8 @@ from contextlib import AbstractAsyncContextManager
 from typing import Callable
 import uuid
 from sqlalchemy.orm import Session, selectinload
-from .model import Altspelling, Translation
-from .exceptions import TranslationNotFoundError, AltspellingNotFoundError
+from .model import SpellingSystem, Translation
+from .exceptions import TranslationNotFoundError, SpellingSystemNotFoundError
 
 
 class TranslationRepository:
@@ -40,17 +41,17 @@ class TranslationRepository:
         to_altspell: bool,
         tradspell_text: str,
         altspell_text: str,
-        altspelling_id: int
+        spelling_system_id: int
     ) -> Translation:
         """
         Add a translation to the database.
 
         Args:
-            to_altspell (bool): True if translated to the alternative spelling system. False if \
+            forward (bool): True if translated to the alternative spelling system. False if \
                 translated to traditional English spelling.
-            tradspell_text (str): Text in traditional English spelling.
-            altspell_text (str): Text in the alternative English spelling system.
-            altspelling_id (int): Id of the alternative spelling system.
+            traditional_text (str): Text in traditional English spelling.
+            respelled_text (str): Text in the alternative English spelling system.
+            spelling_system_id (int): Id of the alternative spelling system.
 
         Returns:
             Translation: The translation object added to the database.
@@ -61,17 +62,17 @@ class TranslationRepository:
                 to_altspell=to_altspell,
                 tradspell_text=tradspell_text,
                 altspell_text=altspell_text,
-                altspelling_id=altspelling_id
+                spelling_system_id=spelling_system_id
             )
             session.add(translation)
             session.commit()
-            translation_with_altspelling = (
+            translation = (
                 session.query(Translation)
-                .options(selectinload(Translation.altspelling))
+                .options(selectinload(Translation.spelling_system))
                 .filter(Translation.id == translation.id)
                 .first()
             )
-            return translation_with_altspelling
+            return translation
 
     def get_by_id(self, translation_id: uuid) -> Translation:
         """
@@ -86,7 +87,7 @@ class TranslationRepository:
         with self.session_factory() as session:
             translation = (
                 session.query(Translation)
-                .options(selectinload(Translation.altspelling))
+                .options(selectinload(Translation.spelling_system))
                 .filter(Translation.id == translation_id)
                 .first()
             )
@@ -94,7 +95,7 @@ class TranslationRepository:
                 raise TranslationNotFoundError(translation_id)
             return translation
 
-class AltspellingRepository:
+class SpellingSystemRepository:
     """Repository for database operations related to alternative spelling systems."""
     def __init__(
         self,
@@ -105,44 +106,45 @@ class AltspellingRepository:
     ) -> None:
         self.session_factory = session_factory
 
-    def add(self, altspelling_name: str) -> Altspelling:
+    def add(self, spelling_system_name: str) -> SpellingSystem:
         """
         Add an alternative spelling system.
 
         Args:
-            altspelling_name (str): Name of the alternative spelling system.
+            spelling_system_name (str): Name of the alternative spelling system.
 
         Returns:
-            Altspelling: The alternative spelling system object added to the database.
+            SpellingSystem: The alternative spelling system object added to the database.
         """
         with self.session_factory() as session:
-            altspelling = Altspelling(name=altspelling_name)
-            session.add(altspelling)
+            spelling_system = SpellingSystem(name=spelling_system_name)
+            session.add(spelling_system)
             session.commit()
-            session.refresh(altspelling)
-            return altspelling
+            session.refresh(spelling_system)
+            return spelling_system
 
     def get_all(self):
         """Retrieve a list of enabled alternative spelling systems."""
         with self.session_factory() as session:
-            return session.query(Altspelling).all()
+            return session.query(SpellingSystem).all()
 
-    def get_by_name(self, altspelling_name: str) -> Altspelling:
+    def get_by_name(self, spelling_system_name: str) -> SpellingSystem:
         """
         Retrieve an alternative spelling system object by alternative spelling system name.
 
         Args:
-            altspelling_name (str): Name of the alternative spelling system.
+            spelling_system_name (str): Name of the alternative spelling system.
 
         Returns:
-            Altspelling: The alternative spelling system object corresponding to altspelling_name.
+            SpellingSystem: The alternative spelling system object corresponding to \
+                spelling_system_name.
         """
         with self.session_factory() as session:
-            altspelling = (
-                session.query(Altspelling)
-                .filter(Altspelling.name == altspelling_name)
+            spelling_system = (
+                session.query(SpellingSystem)
+                .filter(SpellingSystem.name == spelling_system_name)
                 .first()
             )
-            if not altspelling:
-                raise AltspellingNotFoundError
-            return altspelling
+            if not spelling_system:
+                raise SpellingSystemNotFoundError
+            return spelling_system

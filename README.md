@@ -1,6 +1,6 @@
 # Altspell
 
-Flask web app for translating traditional English spelling to an alternative spelling.
+Flask web app for translating traditional English to respelled English and vice versa.
 
 ## Quick Start
 
@@ -29,14 +29,14 @@ flask --app altspell run
 Example HTTP requests:
 
 ```sh
-# List plugins
-curl -X GET -H "Accept: application/json" http://127.0.0.1:5000/api/plugins
+# List available spelling systems
+curl -X GET -H "Accept: application/json" http://127.0.0.1:5000/api/spelling-systems
 
 # Perform forward translation and save the result in the database
 curl -X POST -H "Accept: application/json" -H "Content-Type: application/json" -d  '{
     "text": "Hello, world!",
-    "altspelling": "lytspel",
-    "to_altspell": true,
+    "spellingSystem": "lytspel",
+    "forward": true,
     "save": true
 }' http://127.0.0.1:5000/api/translations
 

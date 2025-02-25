@@ -1,5 +1,5 @@
 '''
-    Altspell  Flask web app for translating traditional English spelling to an alternative spelling
+    Altspell  Flask web app for translating traditional English to respelled English and vice versa
     Copyright (C) 2025  Nicholas Johnson
 
     This program is free software: you can redistribute it and/or modify
