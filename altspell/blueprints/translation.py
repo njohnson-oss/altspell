@@ -52,10 +52,7 @@ def translate(
     JSON Request Parameters:
     - altspelling (str): Name of translation Plugin.
     - to_altspell (bool): Indicates the direction of translation.
-    - tradspell_text (str): Text in traditional English spelling (necessary if to_altspell is \
-        True).
-    - altspell_text (str): Text in alternative English spelling (necessary if to_altspell is \
-        False).
+    - text (str): Text to be translated.
     - save (bool): Indicates whether save the resulting translation.
 
     JSON Response Parameters:
@@ -77,7 +74,7 @@ def translate(
         Request Body: {
             "altspelling": "lytspel",
             "to_altspell': True,
-            "tradspell_text": "Hello world!",
+            "text": "Hello world!",
             "save": True
         }
 
@@ -101,15 +98,13 @@ def translate(
     save = data.get('save')
     altspelling = data.get('altspelling')
     to_altspell = data.get('to_altspell')
-    tradspell_text = data.get('tradspell_text')
-    altspell_text = data.get('altspell_text')
+    text = data.get('text')
 
     try:
         translation = translation_service.translate(
             altspelling,
             to_altspell,
-            tradspell_text,
-            altspell_text,
+            text,
             save
         )
     except (

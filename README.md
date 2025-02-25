@@ -34,7 +34,7 @@ curl -X GET -H "Accept: application/json" http://127.0.0.1:5000/api/plugins
 
 # Perform forward translation and save the result in the database
 curl -X POST -H "Accept: application/json" -H "Content-Type: application/json" -d  '{
-    "tradspell_text": "Hello, world!",
+    "text": "Hello, world!",
     "altspelling": "lytspel",
     "to_altspell": true,
     "save": true

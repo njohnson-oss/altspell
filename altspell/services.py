@@ -80,8 +80,7 @@ class TranslationService:
         self,
         altspelling: str,
         to_altspell: bool,
-        tradspell_text: str,
-        altspell_text: str,
+        text: str,
         save: bool
     ) -> Translation:
         """
@@ -91,8 +90,7 @@ class TranslationService:
             altspelling (str): Name of the Altspelling plugin to use for translation.
             to_altspell (bool): If true, translate tradspell -> altspell. Otherwise translate \
                 altspell -> tradspell.
-            tradspell_text (str): Tradspell text to translate to altspell text.
-            altspell_text (str): Altspell text to translate to tradspell text.
+            text (str): Text to be translated.
             save (bool): If true, persist the translation to the database.
 
         Returns:
@@ -112,26 +110,16 @@ class TranslationService:
 
         if to_altspell is None:
             raise MissingKeyError("to_altspell")
-
         if not isinstance(to_altspell, bool):
             raise InvalidTypeError("to_altspell", bool)
 
-        if to_altspell:
-            if tradspell_text is None:
-                raise MissingKeyError("tradspell_text")
+        if text is None:
+            raise MissingKeyError("text")
 
-            if not isinstance(tradspell_text, str):
-                return InvalidTypeError("tradspell_text", str)
-        else:
-            if altspell_text is None:
-                raise MissingKeyError("altspell_text")
+        if not isinstance(text, str):
+            raise InvalidTypeError("text", str)
 
-            if not isinstance(altspell_text, str):
-                raise InvalidTypeError("altspell_text", str)
-
-        if to_altspell is True and tradspell_text == '':
-            raise EmptyTranslationError
-        if to_altspell is False and altspell_text == '':
+        if text == '':
             raise EmptyTranslationError
 
         selected_plugin = current_app.plugin_instances.get(altspelling)
@@ -148,16 +136,18 @@ class TranslationService:
 
         translation_length_limit = current_app.config['TRANSLATION_LENGTH_LIMIT']
 
+        text = text[:translation_length_limit]
+
         if to_altspell:
-            tradspell_text = tradspell_text[:translation_length_limit]
+            tradspell_text = text
 
             # raises NotImplementedFwdError if unimplemented
-            altspell_text = translate_to_altspell(tradspell_text)
+            altspell_text = translate_to_altspell(text)
         else:
-            altspell_text = altspell_text[:translation_length_limit]
-
             # raises NotImplementedBwdError if unimplemented
-            tradspell_text = translate_to_tradspell(altspell_text)
+            tradspell_text = translate_to_tradspell(text)
+
+            altspell_text = text
 
         translation = Translation(
             to_altspell=to_altspell,
