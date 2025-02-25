@@ -65,6 +65,9 @@ def create_app(test_config=None):
 
     app.container = container
 
+    # create the database
+    container.db().create_database()
+
     # allow CORS for all domains on all routes
     CORS(app)
 
