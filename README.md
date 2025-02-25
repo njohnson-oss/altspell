@@ -14,13 +14,16 @@ source venv/bin/activate
 # Install main program
 pip install git+https://github.com/njohnson-oss/altspell
 
-# Install plugin dependency
-pip install git+https://github.com/njohnson-oss/nlp-provider
+# Install main program dependency
+pip install git+https://github.com/njohnson-oss/altspell-plugins
 
 # Install a few plugins
 pip install git+https://github.com/njohnson-oss/altspell-lytspel  \
             git+https://github.com/njohnson-oss/altspell-portul  \
             git+https://github.com/njohnson-oss/altspell-universal-lojikl-inglish
+
+# Install plugin dependency
+pip install git+https://github.com/njohnson-oss/nlp-provider
 
 # Start web API
 flask --app altspell run
