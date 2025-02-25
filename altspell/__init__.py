@@ -23,14 +23,14 @@ import os
 from flask import Flask
 from flask_cors import CORS
 from sqlalchemy.exc import IntegrityError
-from .plugin import PluginBase
+from altspell_plugins import PluginBase
 
 
 AVAILABLE_PLUGINS = {
     name.removeprefix('altspell_'): importlib.import_module(name)
     for finder, name, ispkg
     in pkgutil.iter_modules()
-    if name.startswith('altspell_')
+    if name.startswith('altspell_') and name != 'altspell_plugins' # ignore plugins interface
 }
 
 def create_app(test_config=None):
