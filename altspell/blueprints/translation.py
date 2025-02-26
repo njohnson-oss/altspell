@@ -183,7 +183,7 @@ def get_translation(
     resp = {
         'id': translation.id,
         'creationDate': pytz.utc.localize(translation.creation_date).isoformat(),
-        'spellingSystem': translation.respelling.name,
+        'spellingSystem': translation.spelling_system.name,
         'forward': translation.forward,
         'traditionalText': translation.traditional_text,
         'respelledText': translation.respelled_text
