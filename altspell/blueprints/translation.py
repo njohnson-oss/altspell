@@ -131,7 +131,7 @@ def translate(
 
     return resp
 
-@bp.route('/translation/<uuid:translation_id>', methods=['GET'])
+@bp.route('/translations/<uuid:translation_id>', methods=['GET'])
 @inject
 def get_translation(
     translation_id: uuid,
