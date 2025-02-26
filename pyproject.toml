@@ -16,10 +16,10 @@ classifiers = [
   "Operating System :: OS Independent",
 ]
 dependencies = [
-    "dependency_injector==4.45.0",
+    "dependency_injector==4.46.0",
     "flask==3.1.0",
     "flask_sqlalchemy==3.1.1",
-    "flask_cors==5.0.0",
+    "flask_cors==5.0.1",
     "psycopg2==2.9.10",
     "pytz==2025.1"
 ]
