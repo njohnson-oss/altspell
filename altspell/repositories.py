@@ -17,24 +17,18 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 '''
 
-from contextlib import AbstractAsyncContextManager
-from typing import Callable
 import uuid
-from sqlalchemy.orm import Session, selectinload
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import selectinload
 from .model import SpellingSystem, Translation
 from .exceptions import TranslationNotFoundError, SpellingSystemNotFoundError
 
 
 class TranslationRepository:
     """Repository for database operations related to translations."""
-    def __init__(
-        self,
-        session_factory: Callable[
-            ...,
-            AbstractAsyncContextManager[Session]
-        ]
-    ) -> None:
-        self.session_factory = session_factory
+    def __init__(self, db: SQLAlchemy) -> None:
+        self.db = db
 
     def add(
         self,
@@ -56,23 +50,25 @@ class TranslationRepository:
         Returns:
             Translation: The translation object added to the database.
         """
-        with self.session_factory() as session:
-            translation = Translation(
-                id=uuid.uuid4(),
-                forward=forward,
-                traditional_text=traditional_text,
-                respelled_text=respelled_text,
-                spelling_system_id=spelling_system_id
-            )
-            session.add(translation)
-            session.commit()
-            translation = (
-                session.query(Translation)
-                .options(selectinload(Translation.spelling_system))
-                .filter(Translation.id == translation.id)
-                .first()
-            )
-            return translation
+        translation = Translation(
+            id=uuid.uuid4(),
+            forward=forward,
+            traditional_text=traditional_text,
+            respelled_text=respelled_text,
+            spelling_system_id=spelling_system_id
+        )
+        self.db.session.add(translation)
+        try:
+            self.db.session.commit()
+        except IntegrityError:
+            self.db.session.rollback()
+        translation = (
+            self.db.session.query(Translation)
+            .options(selectinload(Translation.spelling_system))
+            .filter(Translation.id == translation.id)
+            .first()
+        )
+        return translation
 
     def get_by_id(self, translation_id: uuid) -> Translation:
         """
@@ -84,27 +80,20 @@ class TranslationRepository:
         Returns:
             Translation: The translation object corresponding to translation_id.
         """
-        with self.session_factory() as session:
-            translation = (
-                session.query(Translation)
-                .options(selectinload(Translation.spelling_system))
-                .filter(Translation.id == translation_id)
-                .first()
-            )
-            if not translation:
-                raise TranslationNotFoundError(translation_id)
-            return translation
+        translation = (
+            self.db.session.query(Translation)
+            .options(selectinload(Translation.spelling_system))
+            .filter(Translation.id == translation_id)
+            .first()
+        )
+        if not translation:
+            raise TranslationNotFoundError(translation_id)
+        return translation
 
 class SpellingSystemRepository:
     """Repository for database operations related to alternative spelling systems."""
-    def __init__(
-        self,
-        session_factory: Callable[
-            ...,
-            AbstractAsyncContextManager[Session]
-        ]
-    ) -> None:
-        self.session_factory = session_factory
+    def __init__(self, db: SQLAlchemy) -> None:
+        self.db = db
 
     def add(self, spelling_system_name: str) -> SpellingSystem:
         """
@@ -116,17 +105,22 @@ class SpellingSystemRepository:
         Returns:
             SpellingSystem: The alternative spelling system object added to the database.
         """
-        with self.session_factory() as session:
-            spelling_system = SpellingSystem(name=spelling_system_name)
-            session.add(spelling_system)
-            session.commit()
-            session.refresh(spelling_system)
-            return spelling_system
+        spelling_system = SpellingSystem(name=spelling_system_name)
+        self.db.session.add(spelling_system)
+        try:
+            self.db.session.commit()
+        except IntegrityError:
+            self.db.session.rollback()
+        spelling_system = (
+            self.db.session.query(SpellingSystem)
+            .filter(SpellingSystem.name == spelling_system_name)
+            .first()
+        )
+        return spelling_system
 
     def get_all(self):
         """Retrieve a list of enabled alternative spelling systems."""
-        with self.session_factory() as session:
-            return session.query(SpellingSystem).all()
+        return self.db.session.query(SpellingSystem).all()
 
     def get_by_name(self, spelling_system_name: str) -> SpellingSystem:
         """
@@ -139,12 +133,11 @@ class SpellingSystemRepository:
             SpellingSystem: The alternative spelling system object corresponding to \
                 spelling_system_name.
         """
-        with self.session_factory() as session:
-            spelling_system = (
-                session.query(SpellingSystem)
-                .filter(SpellingSystem.name == spelling_system_name)
-                .first()
-            )
-            if not spelling_system:
-                raise SpellingSystemNotFoundError
-            return spelling_system
+        spelling_system = (
+            self.db.session.query(SpellingSystem)
+            .filter(SpellingSystem.name == spelling_system_name)
+            .first()
+        )
+        if not spelling_system:
+            raise SpellingSystemNotFoundError
+        return spelling_system

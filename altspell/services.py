@@ -20,7 +20,6 @@
 import uuid
 from typing import List, Type
 from flask import current_app
-from sqlalchemy.exc import IntegrityError
 from .repositories import TranslationRepository, SpellingSystemRepository
 from .model import SpellingSystem, Translation
 from .exceptions import (
@@ -72,10 +71,7 @@ class TranslationService:
         Returns:
             SpellingSystem: A SpellingSystem object representing the added database record.
         """
-        try:
-            return self._spelling_system_repository.add(spelling_system)
-        except IntegrityError:
-            return self._spelling_system_repository.get_by_name(spelling_system)
+        return self._spelling_system_repository.add(spelling_system)
 
     def translate(
         self,

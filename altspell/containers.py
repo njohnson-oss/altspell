@@ -18,11 +18,10 @@
 '''
 
 from dependency_injector import containers, providers
-from flask import current_app
 from flask_caching import Cache
+from flask_sqlalchemy import SQLAlchemy
 from .services import SpellingSystemService, TranslationService
 from .repositories import SpellingSystemRepository, TranslationRepository
-from .database import Database
 
 
 class Container(containers.DeclarativeContainer):
@@ -36,7 +35,7 @@ class Container(containers.DeclarativeContainer):
         ]
     )
 
-    db = providers.Singleton(Database, db_url=current_app.config["SQLALCHEMY_DATABASE_URI"])
+    db = providers.Singleton(SQLAlchemy)
 
     cache = providers.Singleton(Cache)
 
@@ -46,12 +45,12 @@ class Container(containers.DeclarativeContainer):
 
     spelling_system_repository = providers.Singleton(
         SpellingSystemRepository,
-        session_factory=db.provided.session
+        db=db
     )
 
     translation_repository = providers.Singleton(
         TranslationRepository,
-        session_factory=db.provided.session
+        db=db
     )
 
     translation_service = providers.Factory(

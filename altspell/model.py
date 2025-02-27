@@ -21,11 +21,13 @@ import uuid
 import datetime
 from typing import List
 from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Uuid
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship, DeclarativeBase
 from sqlalchemy.sql import expression
 from sqlalchemy.ext.compiler import compiles
-from .database import Base
 
+
+class Base(DeclarativeBase):
+    pass
 
 class UTCnow(expression.FunctionElement):
     """A construct representing the current UTC timestamp."""

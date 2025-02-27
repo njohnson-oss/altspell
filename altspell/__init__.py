@@ -24,6 +24,7 @@ from flask import Flask
 from flask_cors import CORS
 from sqlalchemy.exc import IntegrityError
 from altspell_plugins import PluginBase
+from .model import Base
 
 
 AVAILABLE_PLUGINS = {
@@ -69,11 +70,13 @@ def create_app(test_config=None):
 
     app.container = container
 
-    # create the database
-    container.db().create_database()
+    # configure the database
+    db = container.db(model_class=Base)
+    db.init_app(app)
 
     # create the cache
-    container.cache().init_app(app)
+    cache = container.cache()
+    cache.init_app(app)
 
     # allow CORS for all domains on all routes
     CORS(app)
@@ -83,6 +86,10 @@ def create_app(test_config=None):
         os.makedirs(app.instance_path)
     except OSError:
         pass
+
+    # create the database
+    with app.app_context():
+        db.create_all()
 
     app.plugin_instances = {}
 
