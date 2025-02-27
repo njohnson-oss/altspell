@@ -20,6 +20,7 @@ dependencies = [
   "flask==3.1.0",
   "flask_sqlalchemy==3.1.1",
   "flask_cors==5.0.1",
+  "flask_caching==2.3.1",
   "psycopg2==2.9.10",
   "pytz==2025.1",
   "requests==2.32.3"

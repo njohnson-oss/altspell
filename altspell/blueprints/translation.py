@@ -19,6 +19,7 @@
 
 import uuid
 from flask import Blueprint, request
+from flask_caching import Cache
 import pytz
 from dependency_injector.wiring import inject, Provide
 from ..utils.hcaptcha import require_hcaptcha
@@ -39,9 +40,7 @@ bp = Blueprint("translations", __name__, url_prefix='/api')
 @bp.route('/translations', methods=['POST'])
 @require_hcaptcha
 @inject
-def translate(
-    translation_service: TranslationService = Provide[Container.translation_service]
-):
+def translate(translation_service: TranslationService = Provide[Container.translation_service]):
     """
     Endpoint to translate traditional English spelling to alternative English spelling and vice
     versa.
@@ -135,7 +134,8 @@ def translate(
 @inject
 def get_translation(
     translation_id: uuid,
-    translation_service: TranslationService = Provide[Container.translation_service]
+    translation_service: TranslationService = Provide[Container.translation_service],
+    cache: Cache = Provide[Container.cache]
 ):
     """
     Endpoint to get saved translation.
@@ -175,10 +175,16 @@ def get_translation(
     - 400 Bad Request: Translation ID is not a UUID.
     - 404 Not Found: Translation not found.
     """
-    try:
-        translation = translation_service.get_translation_by_id(translation_id)
-    except TranslationNotFoundError as e:
-        return {'error': str(e)}, 404
+
+    translation = cache.get(translation_id)
+
+    if translation is None:
+        try:
+            translation = translation_service.get_translation_by_id(translation_id)
+        except TranslationNotFoundError as e:
+            return {'error': str(e)}, 404
+
+        cache.set(translation_id, translation)
 
     resp = {
         'id': translation.id,

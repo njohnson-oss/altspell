@@ -19,6 +19,7 @@
 
 from dependency_injector import containers, providers
 from flask import current_app
+from flask_caching import Cache
 from .services import SpellingSystemService, TranslationService
 from .repositories import SpellingSystemRepository, TranslationRepository
 from .database import Database
@@ -36,6 +37,8 @@ class Container(containers.DeclarativeContainer):
     )
 
     db = providers.Singleton(Database, db_url=current_app.config["SQLALCHEMY_DATABASE_URI"])
+
+    cache = providers.Singleton(Cache)
 
     spelling_system_service = providers.Factory(
         SpellingSystemService
