@@ -1,6 +1,6 @@
 [project]
 name = "altspell"
-version = "0.1.0"
+version = "0.2.0"
 description = "A flask web API for translating between traditional English spellings and alternative spellings"
 readme = "README.md"
 requires-python = ">=3.8,<4"
