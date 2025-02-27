@@ -12,18 +12,12 @@ python3 -m venv venv
 source venv/bin/activate
 
 # Install main program
-pip install git+https://github.com/Inglish-Respelling-Project/altspell
-
-# Install main program dependency
-pip install git+https://github.com/Inglish-Respelling-Project/altspell-plugins
+pip install altspell
 
 # Install a few plugins
-pip install git+https://github.com/Inglish-Respelling-Project/altspell-lytspel  \
-            git+https://github.com/Inglish-Respelling-Project/altspell-portul  \
-            git+https://github.com/Inglish-Respelling-Project/altspell-universal-lojikl-inglish
-
-# Install plugin dependency
-pip install git+https://github.com/Inglish-Respelling-Project/nlp-provider
+pip install altspell-lytspel \
+            altspell-portul \
+            altspell-soundspel
 
 # Start web API
 flask --app altspell run
