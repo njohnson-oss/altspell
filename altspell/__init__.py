@@ -48,11 +48,7 @@ def create_app(test_config=None):
         # enable all plugins by default
         ENABLED_PLUGINS = AVAILABLE_PLUGINS.keys(),
         # disable CAPTCHA for test purposes
-        ENABLE_HCAPTCHA = False,
-        # set default cache type
-        CACHE_TYPE="SimpleCache",
-        # set default cache timeout
-        CACHE_DEFAULT_TIMEOUT=5*60 # 5 minutes
+        ENABLE_HCAPTCHA = False
     )
 
     if test_config is None:
