@@ -20,6 +20,7 @@
 from dependency_injector import containers, providers
 from flask_caching import Cache
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from .services import SpellingSystemService, TranslationService
 from .repositories import SpellingSystemRepository, TranslationRepository
 
@@ -38,6 +39,8 @@ class Container(containers.DeclarativeContainer):
     db = providers.Singleton(SQLAlchemy)
 
     cache = providers.Singleton(Cache)
+
+    migrate = providers.Singleton(Migrate)
 
     spelling_system_service = providers.Factory(
         SpellingSystemService

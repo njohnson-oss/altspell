@@ -78,6 +78,10 @@ def create_app(test_config=None):
     cache = container.cache()
     cache.init_app(app)
 
+    # create the migration
+    migrate = container.migrate()
+    migrate.init_app(app, db)
+
     # allow CORS for all domains on all routes
     CORS(app)
 
