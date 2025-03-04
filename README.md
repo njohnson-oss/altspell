@@ -27,7 +27,7 @@ Example HTTP requests:
 
 ```sh
 # List available spelling systems
-curl -X GET -H "Accept: application/json" http://127.0.0.1:5000/api/spelling-systems
+curl -X GET -H "Accept: application/json" http://127.0.0.1:5000/api/v1/spelling-systems
 
 # Perform forward translation and save the result in the database
 curl -X POST -H "Accept: application/json" -H "Content-Type: application/json" -d  '{
@@ -35,9 +35,9 @@ curl -X POST -H "Accept: application/json" -H "Content-Type: application/json" -
     "spellingSystem": "lytspel",
     "forward": true,
     "save": true
-}' http://127.0.0.1:5000/api/translations
+}' http://127.0.0.1:5000/api/v1/translations
 
 # Retrieve the saved result from the database
 # translation_id comes from the HTTP response of the previous command
-curl -X GET -H "Accept: application/json" http://127.0.0.1:5000/api/translations/{translation_id}
+curl -X GET -H "Accept: application/json" http://127.0.0.1:5000/api/v1/translations/{translation_id}
 ```

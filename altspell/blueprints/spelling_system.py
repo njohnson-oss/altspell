@@ -23,7 +23,7 @@ from ..services import SpellingSystemService
 from ..containers import Container
 
 
-bp = Blueprint("spelling_systems", __name__, url_prefix='/api')
+bp = Blueprint("spelling_systems", __name__, url_prefix='/api/v1')
 
 @bp.route('/spelling-systems', methods=['GET'])
 @inject
@@ -41,10 +41,10 @@ def get_spelling_systems(spelling_system_service: SpellingSystemService = \
     Example:
 
         Request:
-        GET /api/spelling-systems
+        GET /api/v1/spelling-systems
 
         Response:
-        GET /api/spelling-systems
+        GET /api/v1/spelling-systems
         Response Body: [
             "lytspel",
             "soundspel"

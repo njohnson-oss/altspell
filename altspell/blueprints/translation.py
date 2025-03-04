@@ -35,7 +35,7 @@ from ..exceptions import (
 )
 
 
-bp = Blueprint("translations", __name__, url_prefix='/api')
+bp = Blueprint("translations", __name__, url_prefix='/api/v1')
 
 @bp.route('/translations', methods=['POST'])
 @require_hcaptcha
@@ -70,7 +70,7 @@ def translate(translation_service: TranslationService = Provide[Container.transl
     Example:
 
         Request:
-        POST /api/translations
+        POST /api/v1/translations
         Request Body: {
             "spellingSystem": "lytspel",
             "forward": True,
@@ -79,7 +79,7 @@ def translate(translation_service: TranslationService = Provide[Container.transl
         }
 
         Response:
-        POST /api/translations
+        POST /api/v1/translations
         Response Body: {
             "id": "7d9be066-6a0b-4459-9242-86dce2df6775",
             "creation_date": "2020-10-21T05:39:20+00:00",
@@ -157,10 +157,10 @@ def get_translation(
     Example:
 
         Request:
-        GET /api/translations/7d9be066-6a0b-4459-9242-86dce2df6775
+        GET /api/v1/translations/7d9be066-6a0b-4459-9242-86dce2df6775
 
         Response:
-        GET /api/translations
+        GET /api/v1/translations
         Response Body: {
             "id": "7d9be066-6a0b-4459-9242-86dce2df6775",
             "creationDate": "2020-10-21T05:39:20-0700",
