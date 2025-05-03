@@ -19,8 +19,8 @@
 
 import uuid
 import datetime
-from typing import List
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Uuid
+from typing import List, Optional
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Uuid, JSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship, DeclarativeBase
 from sqlalchemy.sql import expression
 from sqlalchemy.ext.compiler import compiles
@@ -65,6 +65,14 @@ class SpellingSystem(Base):  # pylint: disable=too-few-public-methods
         String,
         unique=True,
         doc='Name of alternative spelling of English.'
+    )
+    pretty_name: Mapped[str] = mapped_column(
+        String,
+        doc='Pretty name of alternative spelling of English.'
+    )
+    facts: Mapped[Optional[JSON]] = mapped_column(
+        JSON,
+        doc='Optional JSON document with miscellaneous info about alternative spelling of English.'
     )
 
     translations: Mapped[List["Translation"]] = relationship(
