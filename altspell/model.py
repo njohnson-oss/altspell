@@ -26,7 +26,7 @@ from sqlalchemy.sql import expression
 from sqlalchemy.ext.compiler import compiles
 
 
-class Base(DeclarativeBase):
+class Base(DeclarativeBase):  # pylint: disable=missing-class-docstring
     pass
 
 class UTCnow(expression.FunctionElement):
