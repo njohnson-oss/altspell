@@ -27,7 +27,7 @@ from .exceptions import (
 )
 
 
-class SpellingSystemService:
+class SpellingSystemService:  # pylint: disable=too-few-public-methods
     """A service providing functionality for spelling system endpoints."""
 
     @staticmethod

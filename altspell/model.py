@@ -26,7 +26,7 @@ from sqlalchemy.sql import expression
 from sqlalchemy.ext.compiler import compiles
 
 
-class Base(DeclarativeBase):  # pylint: disable=missing-class-docstring
+class Base(DeclarativeBase):  # pylint: disable=missing-class-docstring,too-few-public-methods
     pass
 
 class UTCnow(expression.FunctionElement):
@@ -52,7 +52,7 @@ def sqlite_utcnow(_element, _compiler, **_kw):
     timestamp."""
     return "(STRFTIME('%Y-%m-%d %H:%M:%S', 'NOW'))"
 
-class SpellingSystem(Base):
+class SpellingSystem(Base):  # pylint: disable=too-few-public-methods
     """A table containing the enabled alternate spellings of English."""
     __tablename__ = "spelling_system"
 
@@ -72,7 +72,7 @@ class SpellingSystem(Base):
         doc='All translations that use the alternative spelling of English.'
     )
 
-class Translation(Base):
+class Translation(Base):  # pylint: disable=too-few-public-methods
     """A table containing the saved translations."""
     __tablename__ = "translation"
 

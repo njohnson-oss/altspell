@@ -25,7 +25,7 @@ from .services import SpellingSystemService, TranslationService
 from .repositories import SpellingSystemRepository, TranslationRepository
 
 
-class Container(containers.DeclarativeContainer):
+class Container(containers.DeclarativeContainer):  # pylint: disable=too-few-public-methods
     """Container for injecting dependencies into blueprint modules."""
 
     wiring_config = containers.WiringConfiguration(
