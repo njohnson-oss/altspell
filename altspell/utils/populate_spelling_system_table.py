@@ -18,14 +18,20 @@
 '''
 
 from dependency_injector.wiring import inject, Provide
-from ..services import TranslationService
+from altspell_plugins import PluginBase
+from ..services import SpellingSystemService
 from ..containers import Container
 
 
 @inject
 def populate_spelling_system_table(
-    spelling_system: str,
-    translation_service: TranslationService = Provide[Container.translation_service]
+    plugin_instance: PluginBase,
+    spelling_system_service: SpellingSystemService = Provide[Container.spelling_system_service]
 ):
     """Populate spelling system table with spelling system"""
-    translation_service.add_spelling_system(spelling_system)
+    spelling_system_service.add_spelling_system(
+        plugin_instance.name,
+        plugin_instance.version,
+        plugin_instance.pretty_name,
+        plugin_instance.facts
+    )
