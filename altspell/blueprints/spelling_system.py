@@ -60,7 +60,7 @@ def get_spelling_systems(spelling_system_service: SpellingSystemService = \
 
 @bp.route('/spelling-systems/<string:name>', methods=['GET'])
 @inject
-def get_active_spelling_system(
+def get_enabled_spelling_system(
     name: str,
     spelling_system_service: SpellingSystemService = Provide[Container.spelling_system_service]
 ):
