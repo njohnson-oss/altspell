@@ -28,7 +28,7 @@ bp = Blueprint("spelling_systems", __name__, url_prefix='/api/v1')
 
 @bp.route('/spelling-systems', methods=['GET'])
 @inject
-def get_spelling_systems(spelling_system_service: SpellingSystemService = \
+def get_enabled_spelling_systems(spelling_system_service: SpellingSystemService = \
     Provide[Container.spelling_system_service]):
     """
     Endpoint that returns a list of enabled spelling systems.
