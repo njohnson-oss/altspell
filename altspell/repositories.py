@@ -122,22 +122,24 @@ class SpellingSystemRepository:
         """Retrieve a list of enabled alternative spelling systems."""
         return self.db.session.query(SpellingSystem).all()
 
-    def get_by_name(self, spelling_system_name: str) -> SpellingSystem:
+    def get(self, name: str, version: str) -> SpellingSystem:
         """
-        Retrieve an alternative spelling system object by alternative spelling system name.
+        Retrieve an alternative spelling system object by alternative spelling system name and
+        version.
 
         Args:
-            spelling_system_name (str): Name of the alternative spelling system.
+            name (str): Name of the alternative spelling system.
+            version (str): Version of the alternative spelling system.
 
         Returns:
             SpellingSystem: The alternative spelling system object corresponding to \
-                spelling_system_name.
+                name and version.
         """
         spelling_system = (
             self.db.session.query(SpellingSystem)
-            .filter(SpellingSystem.name == spelling_system_name)
+            .filter(SpellingSystem.name == name, SpellingSystem.version == version)
             .first()
         )
         if not spelling_system:
-            raise SpellingSystemNotFoundError
+            raise SpellingSystemNotFoundError(f"{name} v{version}")
         return spelling_system
