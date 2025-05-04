@@ -61,18 +61,6 @@ class TranslationService:
         """
         return self._translation_repository.get_by_id(translation_id)
 
-    def add_spelling_system(self, spelling_system: str) -> SpellingSystem:
-        """
-        Add a spelling system to the database.
-
-        Args:
-            spelling_system (str): Name of the spelling system to add.
-
-        Returns:
-            SpellingSystem: A SpellingSystem object representing the added database record.
-        """
-        return self._spelling_system_repository.add(spelling_system)
-
     def translate(
         self,
         name: str,
