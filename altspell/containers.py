@@ -42,13 +42,14 @@ class Container(containers.DeclarativeContainer):  # pylint: disable=too-few-pub
 
     migrate = providers.Singleton(Migrate)
 
-    spelling_system_service = providers.Factory(
-        SpellingSystemService
-    )
-
     spelling_system_repository = providers.Singleton(
         SpellingSystemRepository,
         db=db
+    )
+
+    spelling_system_service = providers.Factory(
+        SpellingSystemService,
+        spelling_system_repository=spelling_system_repository
     )
 
     translation_repository = providers.Singleton(
