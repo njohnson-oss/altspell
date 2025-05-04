@@ -95,17 +95,27 @@ class SpellingSystemRepository:
     def __init__(self, db: SQLAlchemy) -> None:
         self.db = db
 
-    def add(self, spelling_system_name: str) -> SpellingSystem:
+    def add(self, name: str, version: str, pretty_name: str, facts: str | None) -> SpellingSystem:
         """
         Add an alternative spelling system.
 
         Args:
-            spelling_system_name (str): Name of the alternative spelling system.
+            name (str): Name of the alternative spelling system.
+            version (str): Version of the alternative spelling system.
+            pretty_name (str): Pretty name of the alternative spelling system.
+            facts (str): JSON string for miscellaneous structured info about the spelling system
+                plugin.
 
         Returns:
             SpellingSystem: The alternative spelling system object added to the database.
         """
-        spelling_system = SpellingSystem(name=spelling_system_name)
+
+        spelling_system = SpellingSystem(
+            name=name,
+            version=version,
+            pretty_name=pretty_name,
+            facts=facts
+        )
         self.db.session.add(spelling_system)
         try:
             self.db.session.commit()
@@ -113,7 +123,7 @@ class SpellingSystemRepository:
             self.db.session.rollback()
         spelling_system = (
             self.db.session.query(SpellingSystem)
-            .filter(SpellingSystem.name == spelling_system_name)
+            .filter(SpellingSystem.name == name, SpellingSystem.version == version)
             .first()
         )
         return spelling_system
