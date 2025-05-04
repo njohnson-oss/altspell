@@ -37,12 +37,60 @@ class SpellingSystemService:  # pylint: disable=too-few-public-methods
         self._spelling_system_repository: SpellingSystemRepository = spelling_system_repository
 
     @staticmethod
-    def get_spelling_systems() -> List[str]:
+    def get_enabled_spelling_systems() -> List[str]:
         """
         Returns:
             List: A List of enabled spelling systems.
         """
         return list(current_app.plugin_instances.keys())
+
+    def get_enabled_spelling_system(self, name: str) -> SpellingSystem:
+        """
+        Returns:
+            SpellingSystem: A SpellingSystem object representing the queried database record.
+        """
+
+        name = current_app.plugin_instances.get(name).name
+
+        if name is None:
+            raise SpellingSystemUnavailableError(name)
+
+        version = current_app.plugin_instances.get(name).version
+
+        if version is None:
+            raise SpellingSystemUnavailableError(f"{name} v{version}")
+
+        return self._spelling_system_repository.get(name, version)
+
+    def get_spelling_system(self, name: str, version: str) -> SpellingSystem:
+        """
+        Returns:
+            SpellingSystem: A SpellingSystem object representing the queried database record.
+        """
+
+        # raises SpellingSystemNotFoundError if not found
+        return self._spelling_system_repository.get(name, version)
+
+    def add_spelling_system(
+        self,
+        name: str,
+        version: str,
+        pretty_name: str,
+        facts: str | None
+    ) -> SpellingSystem:
+        """
+        Add a spelling system to the database.
+
+        Args:
+            name (str): Name of the spelling system to add.
+            pretty_name (str): Pretty name of the spelling system to add.
+            facts (str): JSON string for miscellaneous structured info about the spelling system
+                plugin.
+
+        Returns:
+            SpellingSystem: A SpellingSystem object representing the added database record.
+        """
+        return self._spelling_system_repository.add(name, version, pretty_name, facts)
 
 class TranslationService:
     """A service providing functionality for translation endpoints."""
