@@ -34,7 +34,7 @@ class SpellingSystemService:  # pylint: disable=too-few-public-methods
     def get_spelling_systems() -> List[str]:
         """
         Returns:
-            A List of active spelling systems.
+            List: A List of enabled spelling systems.
         """
         return list(current_app.plugin_instances.keys())
 
