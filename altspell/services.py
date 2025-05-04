@@ -30,6 +30,12 @@ from .exceptions import (
 class SpellingSystemService:  # pylint: disable=too-few-public-methods
     """A service providing functionality for spelling system endpoints."""
 
+    def __init__(
+        self,
+        spelling_system_repository: SpellingSystemRepository
+    ):
+        self._spelling_system_repository: SpellingSystemRepository = spelling_system_repository
+
     @staticmethod
     def get_spelling_systems() -> List[str]:
         """
