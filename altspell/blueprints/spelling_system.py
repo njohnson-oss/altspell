@@ -21,7 +21,7 @@ from flask import Blueprint, jsonify
 from dependency_injector.wiring import Provide, inject
 from ..services import SpellingSystemService
 from ..containers import Container
-from ..exceptions import SpellingSystemNotFoundError
+from ..exceptions import SpellingSystemNotFoundError, SpellingSystemUnavailableError
 
 
 bp = Blueprint("spelling_systems", __name__, url_prefix='/api/v1')
@@ -53,8 +53,12 @@ def get_spelling_systems(spelling_system_service: SpellingSystemService = \
 
     HTTP Status Codes:
     - 200 OK: List of spelling systems is returned.
+    - 404 Not Found: Spelling system plugin not found.
     """
-    spelling_systems = spelling_system_service.get_enabled_spelling_systems()
+    try:
+        spelling_systems = spelling_system_service.get_enabled_spelling_systems()
+    except SpellingSystemUnavailableError as e:
+        return {'error': str(e)}, 404
 
     return jsonify(spelling_systems)
 
