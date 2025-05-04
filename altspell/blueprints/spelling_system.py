@@ -70,7 +70,7 @@ def get_enabled_spelling_system(
 ):
     try:
         spelling_system = spelling_system_service.get_enabled_spelling_system(name)
-    except SpellingSystemNotFoundError as e:
+    except SpellingSystemUnavailableError as e:
         return {'error': str(e)}, 404
 
     resp = {
