@@ -68,6 +68,36 @@ def get_enabled_spelling_system(
     name: str,
     spelling_system_service: SpellingSystemService = Provide[Container.spelling_system_service]
 ):
+    """
+    Endpoint that returns a JSON representation of a spelling system plugin.
+
+    This endpoint accepts a GET request and returns a JSON representation of a spelling system \
+        plugin.
+
+    Returns:
+        Response: A JSON response object containing a spelling system plugin.
+
+    Example:
+
+        Request:
+        GET /api/v1/spelling-systems/lytspel
+
+        Response:
+        GET /api/v1/spelling-systems/lytspel
+        Response Body: {
+            "name": "lytspel",
+            "prettyName": "Lytspel",
+            "version": "0.2.1",
+            "facts": {
+                "pluginAuthor": "Nicholas Johnson",
+                "spellingSystemAuthor": "Christian Siefkes"
+            }
+        }
+
+    HTTP Status Codes:
+    - 200 OK: Spelling system plugin is returned.
+    - 404 Not Found: Spelling system plugin not found.
+    """
     try:
         spelling_system = spelling_system_service.get_enabled_spelling_system(name)
     except SpellingSystemUnavailableError as e:
@@ -91,6 +121,36 @@ def get_spelling_system(
     version: str,
     spelling_system_service: SpellingSystemService = Provide[Container.spelling_system_service]
 ):
+    """
+    Endpoint that returns a JSON representation of a spelling system plugin.
+
+    This endpoint accepts a GET request and returns a JSON representation of a spelling system \
+        plugin.
+
+    Returns:
+        Response: A JSON response object containing a spelling system plugin.
+
+    Example:
+
+        Request:
+        GET /api/v1/spelling-systems/lytspel/0.1.0
+
+        Response:
+        GET /api/v1/spelling-systems/lytspel/0.1.0
+        Response Body: {
+            "name": "lytspel",
+            "prettyName": "Lytspel",
+            "version": "0.1.0",
+            "facts": {
+                "pluginAuthor": "Nicholas Johnson",
+                "spellingSystemAuthor": "Christian Siefkes"
+            }
+        }
+
+    HTTP Status Codes:
+    - 200 OK: Spelling system plugin is returned.
+    - 404 Not Found: Spelling system plugin not found.
+    """
     try:
         spelling_system = spelling_system_service.get_spelling_system(name, version)
     except SpellingSystemNotFoundError as e:
