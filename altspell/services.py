@@ -50,15 +50,13 @@ class SpellingSystemService:  # pylint: disable=too-few-public-methods
             SpellingSystem: A SpellingSystem object representing the queried database record.
         """
 
-        name = current_app.plugin_instances.get(name).name
+        plugin_instance = current_app.plugin_instances.get(name)
 
-        if name is None:
+        if plugin_instance is None:
             raise SpellingSystemUnavailableError(name)
 
+        name = current_app.plugin_instances.get(name).name
         version = current_app.plugin_instances.get(name).version
-
-        if version is None:
-            raise SpellingSystemUnavailableError(f"{name} v{version}")
 
         return self._spelling_system_repository.get(name, version)
 
