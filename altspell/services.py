@@ -75,7 +75,7 @@ class TranslationService:
 
     def translate(
         self,
-        spelling_system: str,
+        name: str,
         forward: bool,
         text: str,
         save: bool
@@ -84,7 +84,7 @@ class TranslationService:
         Perform a translation, optionally saving it to the database.
 
         Args:
-            spelling_system (str): Name of the spelling system to use for translation.
+            name (str): Name of the spelling system to use for translation.
             forward (bool): True for translation to the alternative spelling system. False for \
                 translation to traditional English spelling.
             text (str): Text to be translated.
@@ -106,25 +106,26 @@ class TranslationService:
                 raise InvalidTypeError(key_pascal_case, cls)
 
         # exception handling
-        validate_key(spelling_system, "spellingSystem", str)
+        validate_key(name, "spellingSystem", str)
         validate_key(forward, "forward", bool)
         validate_key(text, "text", str)
 
         if text == '':
             raise EmptyTranslationError
 
-        selected_spelling_system = current_app.plugin_instances.get(spelling_system)
+        plugin_instance = current_app.plugin_instances.get(name)
 
-        if selected_spelling_system is None:
-            raise SpellingSystemUnavailableError(spelling_system)
+        if plugin_instance is None:
+            raise SpellingSystemUnavailableError(name)
 
-        # raises SpellingSystemNotFoundError if not found
-        spelling_system = self._spelling_system_repository.get_by_name(spelling_system)
+        spelling_system = self._spelling_system_repository.get(
+            plugin_instance.name,
+            plugin_instance.version
+        )
 
         # get translation functions
-        translate_to_respelling = selected_spelling_system.translate_to_respelling
-        translate_to_traditional_spelling = \
-            selected_spelling_system.translate_to_traditional_spelling
+        translate_to_respelling = plugin_instance.translate_to_respelling
+        translate_to_traditional_spelling = plugin_instance.translate_to_traditional_spelling
 
         translation_length_limit = current_app.config['TRANSLATION_LENGTH_LIMIT']
 
