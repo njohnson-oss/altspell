@@ -59,7 +59,8 @@ def translate(translation_service: TranslationService = Provide[Container.transl
     - id (uuid): ID of the translation. (only if 'save' was True in the request)
     - creation_date (DateTime): Date and time translation was inserted into the database. (only if
                                 'save' was True in the request)
-    - spellingSystem (str): Name of spelling system used for the translation.
+    - spellingSystem.name (str): Name of spelling system used for the translation.
+    - spellingSystem.version (str): Version of spelling system used for the translation.
     - forward (bool): Indicates the direction of translation.
     - traditional_text (str): Text in traditional English spelling.
     - respelled_text (str): Text in alternative English spelling.
@@ -83,7 +84,10 @@ def translate(translation_service: TranslationService = Provide[Container.transl
         Response Body: {
             "id": "7d9be066-6a0b-4459-9242-86dce2df6775",
             "creation_date": "2020-10-21T05:39:20+00:00",
-            "spellingSystem": "lytspel",
+            "spellingSystem": {
+                "name": "lytspel",
+                "version": "0.1.0"
+            }
             "forward": True,
             "traditional_text": "Hello world!",
             "respelled_text": "Heló wurld!"
@@ -118,7 +122,10 @@ def translate(translation_service: TranslationService = Provide[Container.transl
         return {'error': str(e)}, 400
 
     resp = {
-        'spellingSystem': translation.spelling_system.name,
+        'spellingSystem': {
+            'name': translation.spelling_system.name,
+            'version': translation.spelling_system.version
+        },
         'forward': translation.forward,
         'traditionalText': translation.traditional_text,
         'respelledText': translation.respelled_text
@@ -145,7 +152,8 @@ def get_translation(
     JSON Response Parameters:
     - id (uuid): ID of the translation.
     - creationDate (DateTime): Date and time translation was inserted into the database.
-    - spellingSystem (str): Name of spelling system used for the translation.
+    - spellingSystem.name (str): Name of spelling system used for the translation.
+    - spellingSystem.version (str): Version of spelling system used for the translation.
     - forward (bool): If true, traditional_text -> respelled_text. If false, respelledText -> \
         traditionalText.
     - traditionalText (str): Text in traditional English spelling (necessary if forward is True).
@@ -164,7 +172,10 @@ def get_translation(
         Response Body: {
             "id": "7d9be066-6a0b-4459-9242-86dce2df6775",
             "creationDate": "2020-10-21T05:39:20-0700",
-            "spellingSystem": "lytspel",
+            "spellingSystem": {
+                "name": "lytspel",
+                "version": "0.2.0"
+            }
             "forward": True,
             "traditionalText": "Hello world!",
             "respelledText": "Heló wurld!"
@@ -189,7 +200,10 @@ def get_translation(
     resp = {
         'id': translation.id,
         'creationDate': pytz.utc.localize(translation.creation_date).isoformat(),
-        'spellingSystem': translation.spelling_system.name,
+        'spellingSystem': {
+            'name': translation.spelling_system.name,
+            'version': translation.spelling_system.version
+        },
         'forward': translation.forward,
         'traditionalText': translation.traditional_text,
         'respelledText': translation.respelled_text
