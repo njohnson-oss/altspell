@@ -53,6 +53,6 @@ def get_spelling_systems(spelling_system_service: SpellingSystemService = \
     HTTP Status Codes:
     - 200 OK: List of spelling systems is returned.
     """
-    spelling_systems = spelling_system_service.get_spelling_systems()
+    spelling_systems = spelling_system_service.get_enabled_spelling_systems()
 
     return jsonify(spelling_systems)
