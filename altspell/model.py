@@ -20,7 +20,7 @@
 import uuid
 import datetime
 from typing import List, Optional
-from sqlalchemy import Boolean, DateTime, ForeignKey, Integer, String, Uuid, JSON
+from sqlalchemy import Boolean, DateTime, ForeignKey, UniqueConstraint, Integer, String, Uuid, JSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship, DeclarativeBase
 from sqlalchemy.sql import expression
 from sqlalchemy.ext.compiler import compiles
@@ -55,6 +55,9 @@ def sqlite_utcnow(_element, _compiler, **_kw):
 class SpellingSystem(Base):  # pylint: disable=too-few-public-methods
     """A table containing the enabled alternate spellings of English."""
     __tablename__ = "spelling_system"
+    __table_args__ = (
+        UniqueConstraint('name', 'version'),
+    )
 
     id: Mapped[int] = mapped_column(
         Integer,
@@ -63,8 +66,11 @@ class SpellingSystem(Base):  # pylint: disable=too-few-public-methods
     )
     name: Mapped[str] = mapped_column(
         String,
-        unique=True,
         doc='Name of alternative spelling of English.'
+    )
+    version: Mapped[str] = mapped_column(
+        String,
+        doc='Version number of alternative spelling of English'
     )
     pretty_name: Mapped[str] = mapped_column(
         String,
