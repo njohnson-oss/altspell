@@ -20,6 +20,7 @@
 import importlib
 import pkgutil
 import os
+from importlib.metadata import version
 from flask import Flask
 from flask_cors import CORS
 from sqlalchemy.exc import IntegrityError
@@ -110,14 +111,15 @@ def create_app(test_config=None):
                 )
                 continue
 
-            with app.app_context():
-                from .utils.populate_spelling_system_table import populate_spelling_system_table  # pylint: disable=import-outside-toplevel
-                populate_spelling_system_table(plugin)
-
             # initialize plugin
             app.logger.info('Initializing plugin: %s...', plugin)
             plugin_instance = plugin_mod.Plugin()
-            app.plugin_instances[plugin] = plugin_instance
+            plugin_instance.version = version(plugin_mod.__name__)
+            app.plugin_instances[plugin_instance.name] = plugin_instance
+
+            with app.app_context():
+                from .utils.populate_spelling_system_table import populate_spelling_system_table  # pylint: disable=import-outside-toplevel
+                populate_spelling_system_table(plugin_instance)
         else:
             app.logger.warning('Enabled plugin is not available: %s', plugin)
 
