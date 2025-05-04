@@ -21,6 +21,7 @@ from flask import Blueprint, jsonify
 from dependency_injector.wiring import Provide, inject
 from ..services import SpellingSystemService
 from ..containers import Container
+from ..exceptions import SpellingSystemNotFoundError
 
 
 bp = Blueprint("spelling_systems", __name__, url_prefix='/api/v1')
@@ -56,3 +57,48 @@ def get_spelling_systems(spelling_system_service: SpellingSystemService = \
     spelling_systems = spelling_system_service.get_enabled_spelling_systems()
 
     return jsonify(spelling_systems)
+
+@bp.route('/spelling-systems/<string:name>', methods=['GET'])
+@inject
+def get_active_spelling_system(
+    name: str,
+    spelling_system_service: SpellingSystemService = Provide[Container.spelling_system_service]
+):
+    try:
+        spelling_system = spelling_system_service.get_enabled_spelling_system(name)
+    except SpellingSystemNotFoundError as e:
+        return {'error': str(e)}, 404
+
+    resp = {
+        'name': spelling_system.name,
+        'version': spelling_system.version,
+        'pretty_name': spelling_system.pretty_name,
+    }
+
+    if spelling_system.facts is not None:
+        resp['facts'] = spelling_system.facts
+
+    return resp
+
+@bp.route('/spelling-systems/<string:name>/<string:version>', methods=['GET'])
+@inject
+def get_spelling_system(
+    name: str,
+    version: str,
+    spelling_system_service: SpellingSystemService = Provide[Container.spelling_system_service]
+):
+    try:
+        spelling_system = spelling_system_service.get_spelling_system(name, version)
+    except SpellingSystemNotFoundError as e:
+        return {'error': str(e)}, 404
+
+    resp = {
+        'name': spelling_system.name,
+        'version': spelling_system.version,
+        'pretty_name': spelling_system.pretty_name,
+    }
+
+    if spelling_system.facts is not None:
+        resp['facts'] = spelling_system.facts
+
+    return resp
