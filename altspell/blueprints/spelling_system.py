@@ -72,7 +72,7 @@ def get_enabled_spelling_system(
     resp = {
         'name': spelling_system.name,
         'version': spelling_system.version,
-        'pretty_name': spelling_system.pretty_name,
+        'prettyName': spelling_system.pretty_name,
     }
 
     if spelling_system.facts is not None:
@@ -95,7 +95,7 @@ def get_spelling_system(
     resp = {
         'name': spelling_system.name,
         'version': spelling_system.version,
-        'pretty_name': spelling_system.pretty_name,
+        'prettyName': spelling_system.pretty_name,
     }
 
     if spelling_system.facts is not None:
